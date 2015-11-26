@@ -3,15 +3,15 @@
  * Describe the highlevel daily routine of a person
  */
 
+import definitions.HomeEventType;
+
+import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
 
 public class DailyTemplate {
-
-    /* no more than 100 events in a daily template */
-    // private List <SimpleDailyEvent> events = new List`();
 
     // template name
     private int id;
@@ -26,37 +26,6 @@ public class DailyTemplate {
     public DailyTemplate() {
         events = new ArrayList<SimpleDailyEvent>();
     }
-
-    /*
-    public DailyTemplate(ArrayList inputEvents) {
-        this.events = inputEvents;
-    }
-
-    public ArrayList getEvents() {
-        return events;
-    }
-
-    */
-    /* events are added one after the other */
-    /*
-    public void addEvent(SimpleDailyEvent event){
-        events.add(events.size(),event);
-    }
-
-    public int size(){
-        return events.size();
-    }
-*/
-    /*
-    public void print() {
-
-        ListIterator i = events.listIterator();
-        for (int i = 0; i < events.size(); i++) {
-            SimpleDailyEvent event =
-            System.out.println(event)
-        }
-    }
-   */
 
     public int getId() {
         return id;
@@ -82,6 +51,43 @@ public class DailyTemplate {
         events.add(event);
         //System.out.println("Event added: ");// event.toString());
 
+    }
+
+    public SimpleDailyEvent isEventStartTime(List<SimpleDailyEvent> inEvents, int minStamp){
+        for(int i = 0 ; i < inEvents.size() ; i++){
+            SimpleDailyEvent event = inEvents.get(i);
+            if(event.getStartMinuteOfDay() == minStamp)
+                return event;
+        }
+
+        return null;
+    }
+
+    public List<SimpleDailyEvent> duplicateEvents(){
+
+        List eventList = new ArrayList<SimpleDailyEvent>();
+
+        for(int i=0 ; i < events.size() ; i++){
+            SimpleDailyEvent newEvent = new SimpleDailyEvent();
+            SimpleDailyEvent event    = events.get(i);
+
+            HomeEventType type = event.getType();
+            int startMin = event.getStartMinuteOfDay();
+            int endMin = event.getEndMinuteOfDay();
+            double probabilty = event.getProbability();
+            int metaData = event.getMetaData();
+
+            newEvent.setType(type);
+            newEvent.setStartMinInTheDay(startMin);
+            newEvent.setEndMindInTheDay(endMin);
+            newEvent.setProbability(probabilty);
+            newEvent.setMetaData(metaData);
+
+            eventList.add(i,(SimpleDailyEvent)newEvent);
+
+        }
+
+        return eventList;
     }
 
     @Override

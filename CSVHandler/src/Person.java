@@ -1,27 +1,46 @@
+import definitions.ActivityInitiator;
 import definitions.BioClockType;
 import definitions.Gender;
+import definitions.HomeEventType;
+
+import java.lang.reflect.AccessibleObject;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 
 public class Person {
 
     private int id;
 
-    private String decription;
     private int age;
     private Gender gender;
     private PersonaProfile persona;
 
-    /* how social active - face to face, and speaks with others */
-    private float socailAtt;
+    /**
+     * For each potential kYou suggested activity the attitude of the persona for each activity is defined
+     * Scale from 0-10
+     * 0 - like it at all. will never do it.
+     * 10 - like it a lot. will always do it.
+     *
+     * Potential events include: DOSKYPE, DOMUSIC, DOTV, DOBOOK, DOPHYSICAL, DOSOCIAL
+     */
 
-    /* how active and leaves the house */
-    private float nonHomeAtt;
+    private double attToSkype = 0.5;
+    private double attToMusic = 0.5;
+    private double attToTV = 0.5;
+    private double attToBook = 0.5;
+    private double attToPhysical = 0.5;
+    private double attToSocial = 0.5;
 
-    /* how bored and is doing activities in the home such as reading, cooking, TV, etc.  */
-    private float boredemAtt;
+    // interval between events generation for this person
+    int minutesInterval;
+
 
     /* when is the person most active and energized */
     private BioClockType bioType;
+
 
     /**
      * Represent how close (probability) the person is to the persona associated with him.
@@ -30,44 +49,259 @@ public class Person {
      *
      * This is used to generate the specific behaviour of the person. it is guided by the community overall variance
     * */
-    float varianceFromTemplate;
+    private double varianceFromTemplate;
+
+    /* simulated events of that person */
+    private List<SimEvent> simEvents;
+
+    /* person weekday daily profile */
+    private List<SimpleDailyEvent> weekDayTemplateEvents;
+
+    /* person weekend daily profile */
+    private List<SimpleDailyEvent> weekEndDayTemplateEvents;
+
 
     public Person() {
+        simEvents = new ArrayList<SimEvent>();
     }
 
-    public Person(int id,
-                           int age,
-                           Gender gender,
-                           PersonaProfile persona,
-                           float socailAtt,
-                           float nonHomeAtt,
-                           float boredemAtt,
-                           float varianceFromTemplate,
-                           BioClockType bio) {
-        this.id = id;
-        this.age = age;
-        this.gender = gender;
-        this.persona = persona;
-        this.socailAtt = socailAtt;
-        this.nonHomeAtt = nonHomeAtt;
-        this.boredemAtt = boredemAtt;
-        this.varianceFromTemplate = varianceFromTemplate;
-        this.bioType = bio;
+
+    /**
+     * specific people attributes are calculated based on the person persona attributes + a variance based on the
+     * overall community behavioral varinace.
+     *
+     * For example:
+     * Persona social-att is 0.5
+     * Population behavioral variance is 0.5, i.e. 50%
+     *
+     * The person social attribute will be a random number in the range of 0.5-50%, 0.5+50%
+     */
+
+
+    public void generateAttributes(double communityVariance) {
+
+        // set skype attribute
+        double attribute = persona.getAttToSkype();
+        attToSkype = generateFactoredAttribute(attribute,communityVariance);
+        //System.out.println("Skype attribute: " + attribute + " , variance: " + communityVariance + " , factored attirbute " + attToSkype);
+
+        // set music attribute
+        attribute = persona.getAttToMusic();
+        attToMusic = generateFactoredAttribute(attribute,communityVariance);
+        //System.out.println("Music attribute: " + attribute + " , variance: " + communityVariance + " , factored attirbute " + attToMusic);
+
+        // set TV attribute
+        attribute = persona.getAttToTV();
+        attToTV = generateFactoredAttribute(attribute,communityVariance);
+        //System.out.println("TV attribute: " + attribute + " , variance: " + communityVariance + " , factored attirbute " + attToTV);
+
+        // set book attribute
+        attribute = persona.getAttToBook();
+        attToBook = generateFactoredAttribute(attribute,communityVariance);
+        //System.out.println("Book attribute: " + attribute + " , variance: " + communityVariance + " , factored attirbute " + attToBook);
+
+        // set physical attribute
+        attribute = persona.getAttToPhysical();
+        attToPhysical = generateFactoredAttribute(attribute,communityVariance);
+        //System.out.println("Physical attribute: " + attribute + " , variance: " + communityVariance + " , factored attirbute " + attToPhysical);
+
+        // set social attribute
+        attribute = persona.getAttToSocial();
+        attToSocial = generateFactoredAttribute(attribute,communityVariance);
+        //System.out.println("Social attribute: " + attribute + " , variance: " + communityVariance + " , factored attirbute " + attToSocial);
+
     }
 
-    @Override
-    public String toString() {
-        return "Persona details{" +
-                "id=" + id +
-                ", age=" + age +
-                ", gender=" + gender.toString() +
-                ", persona=" + persona.getID() +
-                ", socailAtt=" + socailAtt +
-                ", nonHomeAtt=" + nonHomeAtt+
-                ", boredemAtt=" + boredemAtt +
-                ", varianceFromTemplate=" + varianceFromTemplate +
-                '}';
+    /**
+     * Generate the  simulated events based on the person persona, daily template, personal attributes and simulation configuration
+     * Assumes that the simulation starts on the first day of the week. Day 6 and 7 of the week are weekend days
+     * @param numberOfDays
+     */
+    public void generateSimEvents(int numberOfDays){
+
+        boolean weekEndFlag;
+
+        for(int day = 1 ; day < numberOfDays+1 ; day++) {
+            weekEndFlag = false;
+
+            if (((day % 6) == 0) || ((day % 7) == 0))
+                weekEndFlag = true;
+
+            generateDayEvents(day, weekEndFlag);
+        }
     }
+
+    /**
+     * Generate a single day simulated events
+     *
+     * /*
+
+     Day template
+     {"type": "TOILET",  "start" : "00:00", "end" :"02:10", "meta-data": "none", "mandatory" : "NO"},
+     {"type": "SLEEP",   "start" : "02:10", "end" :"06:30", "meta-data": "none", "mandatory" : "YES"},
+     {"type": "EAT",   "start" : "09:00", "end" :"09:40", "meta-data": "none", "mandatory" : "YES"},
+     {"type": "TV",    "start" : "10:00", "end" :"14:10", "meta-data": "none", "mandatory" : "NO"}
+     {"type": "MOOD",    "start" : "15:00", "end" :"15:20", "meta-data": "NEUTRAL", "mandatory" : "YES"},
+     {"type": "EAT",   "start" : "18:20", "end" :"19:00", "meta-data": "none", "mandatory" : "YES"},
+     {"type": "TOILET",  "start" : "21:30", "end" :"21:40", "meta-data": "none", "mandatory" : "NO"},
+     {"type": "SLEEP",   "start" : "22:10", "end" :"00:00", "meta-data": "none", "mandatory" : "YES"}
+
+     ASSUMES ALL EVENTS ARE TIME ORDERED
+
+
+
+
+        go on every X min interval and decide which event to generate (
+
+
+        iterate on each event e from template {
+            check if event happens based on probability and variance (0 means not happened, 1 means happened regardless of variance
+            generate variance starting time / end-time
+            for the duration of the event in given intervals
+                if e happened
+                    generate original event with original type
+                  else
+                    generate event with unknown type
+
+            decide if kYou should intervine
+                if yes
+                    generate intervension type
+                    generate kYou initiated event
+                    decide if it was sucsuful or not
+                    if success
+                        generate intervension casue events for X duration
+
+            }
+
+
+     * @param dayID
+     */
+
+    private void generateDayEvents(int dayID, boolean weekEnd) {
+
+        // in minutes
+        int currenTime = 0;
+
+        List<SimpleDailyEvent> dayTemplate;
+
+        if (weekEnd)
+            dayTemplate = weekDayTemplateEvents;
+        else
+            dayTemplate = weekDayTemplateEvents;
+
+
+        double eventProbability;
+        double factoredProbability;
+        Random rand = new Random();
+        boolean eventIsOn = false;
+        int endEventTime = 0;
+        SimpleDailyEvent templateEvent;
+        SimpleDailyEvent eventInProgress = null;
+
+
+
+        for (int timeSlot = 0; timeSlot < (24 * 60) / minutesInterval; timeSlot++) {
+            SimEvent event = new SimEvent();
+
+            event.setPersonID(this.id);
+            event.setDayNum(dayID);
+            event.setHour(currenTime / 60);
+            event.setMinute(currenTime % 60);
+            event.setInitiaor(ActivityInitiator.PERSON);
+            event.setPersonActivityType(HomeEventType.UNKNOWN);
+
+            // check if this is a starting point of a new event
+            templateEvent = persona.getWeekdayRoutine().isEventStartTime(dayTemplate,currenTime);
+
+            // check if it is time to start a new event
+            if (templateEvent == null) {
+                // check if an existing event is in progress
+                if ((eventIsOn) && (eventInProgress.getEndMinuteOfDay() != currenTime)) {
+                    // event in progress didnt end yet.
+                    event.setInitiaor(ActivityInitiator.PERSON);
+                    event.setPersonActivityType(eventInProgress.getType());
+
+                    if (eventInProgress.getType() == HomeEventType.MOOD)
+                        event.setMetaData(eventInProgress.getMetaData());
+                } else
+                // now event in progress and no new event
+                {
+                    eventIsOn = false;
+                    eventInProgress = null;
+                    //System.out.println("DATA GEN: Time for kYou to decide if to initiate an event ");
+                    // decide if to generate a kYou event
+                    // if yes
+                    // generate kYou event
+                    // generate kYou event casue (insert to event list)
+                    // if not, generate UNKNOWENEVENT
+                }
+
+            } else
+            // found an event in template
+            {
+                // decide if this event is going to happen
+                eventProbability = templateEvent.getProbability();
+                double random = rand.nextDouble();
+
+                // if probability is 0 so the event will never happen
+                // generate event only if probability
+                if (eventProbability > 0) {
+                    if ((eventProbability == 1) || (eventProbability > random)) {
+                        // set event attirbutes
+                        event.setInitiaor(ActivityInitiator.PERSON);
+                        event.setPersonActivityType(templateEvent.getType());
+                        if (templateEvent.getType() == HomeEventType.MOOD)
+                            event.setMetaData(templateEvent.getMetaData());
+
+                        eventInProgress = templateEvent;
+                        eventIsOn = true;
+                    } else {
+                        System.out.println("Event didnt pass probability. EventProbability:" + eventProbability + ", random:" + random);
+                        System.out.println(templateEvent);
+                    }
+
+                }
+            }
+
+            System.out.println("DATA GEN: Adding event to person " + this.id);
+            System.out.println(event);
+            this.simEvents.add(event);
+            currenTime += minutesInterval;
+        }
+            // update flags and state, endTime
+    }
+
+
+
+    /* calcualate factored attirbutes based on variance and persona */
+
+    private double generateFactoredAttribute(double attribute, double variance){
+
+        // set book attribute
+        double factoredAttribute;
+        double factor;
+        boolean negative;
+        Random rand = new Random();
+
+
+        /* attToBook attribute */
+        negative = rand.nextBoolean();
+        factor = rand.nextDouble() * variance;
+
+        if (negative == true)
+            factor = -factor;
+
+        factoredAttribute = attribute + (attribute * factor);
+
+        if(factoredAttribute < 0) factoredAttribute = 0;
+        if(factoredAttribute > 1) factoredAttribute = 1;
+
+        DecimalFormat df = new DecimalFormat("#.##");
+        factoredAttribute = Double.valueOf(df.format(factoredAttribute));
+
+        return factoredAttribute;
+    }
+
 
     public int getId() {
         return id;
@@ -91,38 +325,20 @@ public class Person {
 
     public void setPersona(PersonaProfile persona) {
         this.persona = persona;
+        weekDayTemplateEvents = persona.getWeekendRoutine().duplicateEvents();
+        weekEndDayTemplateEvents = persona.getWeekendRoutine().duplicateEvents();
     }
 
-    public float getSocailAtt() {
-        return socailAtt;
-    }
-
-    public void setSocailAtt(float socailAtt) {
-        this.socailAtt = socailAtt;
-    }
-
-    public float getNonHomeAtt() {
-        return nonHomeAtt;
-    }
-
-    public void setNonHomeAtt(float nonHomeAtt) {
-        this.nonHomeAtt = nonHomeAtt;
-    }
-
-    public float getBoredemAtt() {
-        return boredemAtt;
-    }
-
-    public void setBoredemAtt(float boredemAtt) {
-        this.boredemAtt = boredemAtt;
-    }
-
-    public float getVarianceFromTemplate() {
+    public double getVarianceFromTemplate() {
         return varianceFromTemplate;
     }
 
-    public void setVarianceFromTemplate(float varianceFromTemplate) {
+    public void setVarianceFromTemplate(double varianceFromTemplate, int intervals) {
         this.varianceFromTemplate = varianceFromTemplate;
+
+        updateTemplateEventTime((ArrayList)weekDayTemplateEvents,varianceFromTemplate, intervals);
+        updateTemplateEventTime((ArrayList)weekEndDayTemplateEvents,varianceFromTemplate, intervals);
+
     }
 
     public Gender getGender() {
@@ -133,14 +349,6 @@ public class Person {
         this.gender = gender;
     }
 
-    public String getDecription() {
-        return decription;
-    }
-
-    public void setDecription(String decription) {
-        this.decription = decription;
-    }
-
     public BioClockType getBioType() {
         return bioType;
     }
@@ -148,4 +356,171 @@ public class Person {
     public void setBioType(BioClockType bioType) {
         this.bioType = bioType;
     }
+
+    public double getAttToSkype() {
+        return attToSkype;
+    }
+
+    public void setAttToSkype(double attToSkype) {
+        this.attToSkype = attToSkype;
+    }
+
+    public double getAttToMusic() {
+        return attToMusic;
+    }
+
+    public void setAttToMusic(double attToMusic) {
+        this.attToMusic = attToMusic;
+    }
+
+    public double getAttToTV() {
+        return attToTV;
+    }
+
+    public void setAttToTV(double attToTV) {
+        this.attToTV = attToTV;
+    }
+
+    public double getAttToBook() {
+        return attToBook;
+    }
+
+    public void setAttToBook(double attToBook) {
+        this.attToBook = attToBook;
+    }
+
+    public double getAttToPhysical() {
+        return attToPhysical;
+    }
+
+    public void setAttToPhysical(double attToPhysical) {
+        this.attToPhysical = attToPhysical;
+    }
+
+    public double getAttToSocial() {
+        return attToSocial;
+    }
+
+    public void setAttToSocial(double attToSocial) {
+        this.attToSocial = attToSocial;
+    }
+
+    public List<SimEvent> getSimEvents() {
+        return simEvents;
+    }
+
+    public int getMinutesInterval() {
+        return minutesInterval;
+    }
+
+    public void setMinutesInterval(int minutesInterval) {
+        this.minutesInterval = minutesInterval;
+    }
+
+    @Override
+    public String toString() {
+
+
+        return "Person-" +
+                "id=" + id +
+                " { age=" + age +
+                ", gender=" + gender +
+                ", persona name=" + persona.getName() +
+                ", attToSkype=" + attToSkype +
+                ", attToMusic=" + attToMusic +
+                ", attToTV=" + attToTV +
+                ", attToBook=" + attToBook +
+                ", attToPhysical=" + attToPhysical +
+                ", attToSocial=" + attToSocial +
+                ", bioType=" + bioType +
+                ", varianceFromTemplate=" + varianceFromTemplate +
+                ", EVENTS=" + simEvents +
+                '}';
+    }
+
+    /*
+    * pass over person day event templates and update the start/end time based on variance input.
+    * The variance is within a 1 hour window. 20% means originial time +60*20% , -60*20% (rounded to 5 min jumps)
+    *
+    * */
+
+    private void updateTemplateEventTime(ArrayList<SimpleDailyEvent> inputTemplate, double varianceFromTemplate, int eventsTimeInterval) {
+
+        for(int i = 0; i < inputTemplate.size() ; i++){
+            SimpleDailyEvent event = inputTemplate.get(i);
+            int startMin = event.getStartMinuteOfDay();
+            int endMin = event.getEndMinuteOfDay();
+            int newMin = 0;
+
+            //System.out.println("Event before time variance (" + varianceFromTemplate + ") factor: " + event);
+
+            /*
+             update start time
+             update only events not starting at midnight (which will be sleep)
+            */
+
+
+            if((startMin != 0)){
+                Random rand = new Random();
+                double variance = (rand.nextDouble() * 60) * varianceFromTemplate;
+                int factor = (int) variance;
+
+
+                // need to round to interval steps
+                factor = (factor / eventsTimeInterval) * eventsTimeInterval;
+                boolean negative = rand.nextBoolean();
+
+                if(negative){
+                    newMin = startMin - factor;
+
+                    if((newMin > 0) && (newMin < endMin)){
+                        event.setStartMinInTheDay(newMin);
+                    }
+
+                } else {
+                    newMin = startMin + factor;
+
+                    if (newMin < 60 * 24) {
+                        event.setStartMinInTheDay(newMin);
+                    }
+                }
+            }
+
+            /*
+             update end time
+             update only events not ending at midnight (which will be sleep)
+            */
+
+            newMin = 0;
+
+            if((endMin != 0)){
+                Random rand = new Random();
+                double variance = (rand.nextDouble() * 60) * varianceFromTemplate;
+                int factor = (int) variance;
+
+                // need to round to interval steps
+                factor = (factor / eventsTimeInterval) * eventsTimeInterval;
+                boolean negative = rand.nextBoolean();
+
+                if(negative){
+                    newMin = endMin - factor;
+
+                    if((newMin > 0) && (newMin > startMin)){
+                        event.setEndMindInTheDay(newMin);
+                    }
+
+                } else {
+                    newMin = endMin + factor;
+
+                    if (newMin < 60 * 24) {
+                        event.setEndMindInTheDay(newMin);
+                    }
+                }
+            }
+
+            //System.out.println("Event after time variance (" + varianceFromTemplate + ")factor: " + event);
+        }
+    }
+
+
 }

@@ -3,11 +3,9 @@
  * represents a single day event
  */
 
+import definitions.ActivityInitiator;
 import definitions.HomeEventType;
-
-import java.sql.Time;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 
 
@@ -23,21 +21,20 @@ public class SimpleDailyEvent
 
     HomeEventType type;
 
-    Date startDate; // day, hours, minute
+    int startMinInTheDay; // minute
 
-    Date endDate;   // day, hours, minute
+    int endMindInTheDay;   // minute
 
-    String metaData;
+    int metaData; // additional meta data about the event (for now only in int format)
 
-    boolean mandatoryEvent = false;
+    double probability; // probability for the event to happen
 
-
-
-    public void DayEvent(HomeEventType type, Date startDate, Date endDate, String data) {
+    public void DayEvent(HomeEventType type, int startMinInTheDay, int endMindInTheDay, int metaData, double probability) {
         this.type = type;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.metaData = data;
+        this.startMinInTheDay = startMinInTheDay;
+        this.endMindInTheDay = endMindInTheDay;
+        this.metaData = metaData;
+        this.probability = probability;
     }
 
     public HomeEventType getType() {
@@ -51,8 +48,7 @@ public class SimpleDailyEvent
     public void setType(String type) {
 
 
-        // SLEEP , TOILET, NOTINHOME, DOVISITOR, DOEAT, DOPHONE, DOCOOK, DOMUSIC, DOTV,
-        //         DOBOOK, DOPHYSICAL, DOSOCIAL
+        // SLEEP , TOILET, NOTINHOME, VISITOR, EAT, PHONE, COOK, MUSIC, TV, BOOK, PHYSICAL, SOCIAL, PLAY, MOOD, UNKNOWN
         if (type.equals("SLEEP")) {
             this.type = HomeEventType.SLEEP;
             return;
@@ -107,21 +103,29 @@ public class SimpleDailyEvent
             return;
         }
 
+        if (type.equals("MOOD")) {
+            this.type = HomeEventType.MOOD;
+            return;
+        }
+
+        if (type.equals("UNKNOWN")) {
+            this.type = HomeEventType.UNKNOWN;
+            return;
+        }
+
         System.out.println("ERROR: unidentified event type - " + type);
-        System.exit(0);
+        System.exit(1);
     }
 
 
 
-    public Date getStartDate() {
-        return startDate;
+    public int getStartDate() {
+        return startMinInTheDay;
     }
 
     public void setStartDate(String startDateStr) {
 
         String tmp;
-        startDate = new Date();
-
 
         if(startDateStr.length() != 5) {
             System.out.println("error in startDateStr format");
@@ -135,19 +139,18 @@ public class SimpleDailyEvent
 
         int min = (int)Integer.parseInt(tmp);
 
-        startDate.setHours(hour);
-        startDate.setMinutes(min);
+        startMinInTheDay = (hour * 60) + min;
 
     }
 
-    public Date getEndDate() {
-        return endDate;
+    public void setStartMinInTheDay(int min){
+        startMinInTheDay = min;
     }
+
 
     public void setEndDate(String endDateStr) {
 
         String tmp;
-        endDate = new Date();
 
         if(endDateStr.length() != 5)
             System.out.println("error in endDataStr format");
@@ -159,49 +162,51 @@ public class SimpleDailyEvent
 
         int min = (int)Integer.parseInt(tmp);
 
-        endDate.setHours(hour);
-        endDate.setMinutes(min);
+        endMindInTheDay = (hour * 60) + min;
+
     }
 
-    public void setMetaData(String metaData) {
+    public void setEndMindInTheDay(int min){
+        endMindInTheDay = min;
+    }
+
+    public int getStartMinuteOfDay() {
+
+        return startMinInTheDay;
+    }
+
+    public int getEndMinuteOfDay() {
+
+        return endMindInTheDay;
+    }
+
+
+    public void setMetaData(int metaData) {
         this.metaData = metaData;
     }
 
-    public void setMandatoryEvent(String mandatoryFlagStr) {
-        if(mandatoryFlagStr.matches("YES")) {
-            this.mandatoryEvent = true;
-            return;
-        }
-
-        if(mandatoryFlagStr.matches("NO")) {
-            this.mandatoryEvent = false;
-            return;
-        }
-
-        System.out.println("Error in mandatory event flag parsing");
-        System.exit(0);
+    public int getMetaData() {
+        return metaData;
     }
 
-    /* get activity duration (in seconds) */
-    long getDurationInSecs(){
-
-        long duration  = endDate.getTime() - startDate.getTime();
-
-        long diffInSeconds = TimeUnit.MILLISECONDS.toSeconds(duration);
-        //long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(duration);
-        //long diffInHours = TimeUnit.MILLISECONDS.toHours(duration);
-
-        return diffInSeconds;
+    public double getProbability() {
+        return probability;
     }
+
+    public void setProbability(double probability) {
+        this.probability = probability;
+    }
+
+
 
     @Override
     public String toString() {
         return  '\n' +  "SimpleDailyEvent{" +
                 "type=" + type +
-                ", startTime = " + startDate.getHours() + ":" + startDate.getMinutes() +
-                ", endTime = " + endDate.getHours() + ":" + endDate.getMinutes() +
+                ", startTime = " + (int)(startMinInTheDay / 60) + ":" + (startMinInTheDay % 60) +
+                ", endTime = " + (int)(endMindInTheDay / 60) + ":" + (endMindInTheDay % 60) +
                 ", meta = " + metaData +
-                ", mandatroy='" + mandatoryEvent + '\'' +
+                ", probability='" + probability + '\'' +
                 '}';
     }
 }

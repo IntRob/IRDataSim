@@ -22,6 +22,7 @@ public class PersonaProfile {
     private DailyTemplate weekendRoutine;
 
 
+
     /**
      * For each potential kYou suggested activity the attitude of the persona for each activity is defined
      * Scale from 0-10
@@ -31,22 +32,22 @@ public class PersonaProfile {
      * Potential events include: DOPHONE, DOMUSIC, DOTV, DOBOOK, DOPHYSICAL, DOSOCIAL
      */
 
-    private int attToPhone;
-    private int attToMusic;
-    private int attToTV;
-    private int attToBook;
-    private int attToPhysical;
-    private int attToSocial;
+    private double attToSkype = 0.5;
+    private double attToMusic = 0.5;
+    private double attToTV = 0.5;
+    private double attToBook = 0.5;
+    private double attToPhysical = 0.5;
+    private double attToSocial = 0.5;
 
 
     /**
      * Attitude to routine defines how close this persona follows its routine.
-     * Scale from 0-10
-     * 0 - never
-     * 10 - always
+     * Scale from 0-1
+     * 1 always
+     * 0 never
      */
 
-    private int attToRoutine;
+    private double attToRoutine;
 
     public PersonaProfile() {
     }
@@ -98,61 +99,63 @@ public class PersonaProfile {
         this.name = name;
     }
 
-    public int getAttToPhone() {
-        return attToPhone;
+    public double getAttToSkype() {
+        return attToSkype;
     }
 
-    public void setAttToPhone(int attToPhond) {
-        this.attToPhone = attToPhond;
+    public void setAttToPhone(double attToSkype) {
+        this.attToSkype = attToSkype;
     }
 
-    public int getAttToMusic() {
+    public double getAttToMusic() {
         return attToMusic;
     }
 
-    public void setAttToMusic(int attToMusic) {
+    public void setAttToMusic(double attToMusic) {
         this.attToMusic = attToMusic;
     }
 
-    public int getAttToTV() {
+    public double getAttToTV() {
         return attToTV;
     }
 
-    public void setAttToTV(int attToTV) {
+    public void setAttToTV(double attToTV) {
         this.attToTV = attToTV;
     }
 
-    public int getAttToBook() {
+    public double getAttToBook() {
         return attToBook;
     }
 
-    public void setAttToBook(int attToBook) {
+    public void setAttToBook(double attToBook) {
         this.attToBook = attToBook;
     }
 
-    public int getAttToPhysical() {
+    public double getAttToPhysical() {
         return attToPhysical;
     }
 
-    public void setAttToPhysical(int attToPhysical) {
+    public void setAttToPhysical(double attToPhysical) {
         this.attToPhysical = attToPhysical;
     }
 
-    public int getAttToSocial() {
+    public double getAttToSocial() {
         return attToSocial;
     }
 
-    public void setAttToSocial(int attToSocial) {
+    public void setAttToSocial(double attToSocial) {
         this.attToSocial = attToSocial;
     }
 
-    public int getAttToRoutine() {
+    public double getAttToRoutine() {
         return attToRoutine;
     }
 
-    public void setAttToRoutine(int attToRoutine) {
+    public void setAttToRoutine(double attToRoutine) {
         this.attToRoutine = attToRoutine;
     }
+
+
 
     @Override
     public String toString() {
@@ -162,7 +165,7 @@ public class PersonaProfile {
                 ", typeDescriptor='" + typeDescriptor + '\'' +
                 ", weekdayRoutine=" + weekdayRoutine +
                 ", weekendRoutine=" + weekendRoutine +
-                "\n" + ", attToPhone=" + attToPhone +
+                "\n" + ", attToSkype=" + attToSkype +
                 ", attToMusic=" + attToMusic +
                 ", attToTV=" + attToTV +
                 ", attToBook=" + attToBook +

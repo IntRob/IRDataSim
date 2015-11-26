@@ -1,18 +1,18 @@
 {
-  "simulation-numOfDailyTemplates": "5",
-  "simulation-numOfDays": "1000",
-  "community-size": "30",
+  "simulation-numOfDays": "3",
+  "community-size": "3",
   "community-minAge": "70",
   "community-maxAge": "85",
   "community-ageDirstibution": "Random",
+  "community-bioClockDistribution": "Random",
   "community-percentageMale": "50",
-  "community-variance" : "0.1"
+  "community-variance" : "0",
   "community-persona-split": [
     {
       "Number-of-persona-types": "3",
-      "Persona0": "5",
-      "Persona1": "10",
-      "Persona2": "15"
+      "Persona0": "1",
+      "Persona1": "1",
+      "Persona2": "1"
     }
   ],
   
@@ -27,7 +27,7 @@
       "attToPhysical" : "0",
       "attToTV" : "0",
       "attToSocial" : "0",
-      "attToPhone" : "0",
+      "attToSkype" : "0",
       "attToRoutine" : "0"
     },
 
@@ -36,26 +36,27 @@
       "description": "California",
       "weekdaytemplateID": "2",
       "weekendtemplateID": "2",
-      "attToMusic" : "7",
-      "attToBook" : "6",
-      "attToPhysical" : "5",
-      "attToTV" : "4",
-      "attToSocial" : "3",
-      "attToPhone" : "2",
-      "attToRoutine" : "1"
+      "attToMusic" : "0.7",
+      "attToBook" : "0.6",
+      "attToPhysical" : "0.5",
+      "attToTV" : "0.4",
+      "attToSocial" : "0.3",
+      "attToSkype" : "0.2",
+      "attToRoutine" : "0.1"
     },
+
     {
       "name" : "Persona2",
       "description": "Happy",
       "weekdaytemplateID": "2",
       "weekendtemplateID": "2",
-      "attToMusic" : "4",
-      "attToBook" : "5",
-      "attToPhysical" : "6",
-      "attToTV" : "7",
-      "attToSocial" : "8",
-      "attToPhone" : "9",
-      "attToRoutine" : "10"
+      "attToMusic" : "0.4",
+      "attToBook" : "0.9",
+      "attToPhysical" : "0.6",
+      "attToTV" : "0.7",
+      "attToSocial" : "0.8",
+      "attToSkype" : "0.9",
+      "attToRoutine" : "1"
     }
     
     

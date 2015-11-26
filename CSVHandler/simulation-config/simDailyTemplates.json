@@ -4,20 +4,25 @@
       "template-id" : "1",
       "template-desc" : "normal",
       "events": [
-            {"type": "TOILET",  "start" : "02:00", "end" :"02:10", "meta-data": "none", "mandatory" : "NO"},
-            {"type": "SLEEP",   "start" : "02:10", "end" :"06:30", "meta-data": "none", "mandatory" : "YES"},
-            {"type": "EAT",   "start" : "09:00", "end" :"09:40", "meta-data": "none", "mandatory" : "YES"},
-            {"type": "TV",    "start" : "10:00", "end" :"22:10", "meta-data": "none", "mandatory" : "NO"}
-        ]
+            {"type": "SLEEP",  "start" : "00:00", "end" :"00:10", "meta-data": "0", "probability" : "1"},
+            {"type": "TOILET", "start" : "00:10", "end" :"00:20", "meta-data": "0", "probability" : "1"},
+            {"type": "SLEEP",   "start" : "00:25", "end" :"07:25", "meta-data": "0", "probability" : "1"},
+            {"type": "EAT",    "start" : "08:00", "end" :"08:30", "meta-data": "0", "probability" : "1"},
+            {"type": "TV",    "start" : "10:00", "end" :"14:10", "meta-data": "0", "probability" : "1"},
+            {"type": "MOOD",    "start" : "15:00", "end" :"15:20", "meta-data": "3", "probability" : "1"},
+            {"type": "EAT",   "start" : "18:20", "end" :"19:00", "meta-data": "0", "probability" : "1"},
+            {"type": "TOILET",  "start" : "21:30", "end" :"21:40", "meta-data": "0", "probability" : "1"},
+            {"type": "SLEEP",   "start" : "22:10", "end" :"00:00", "meta-data": "0", "probability" : "1"}
+      ]
     },
 
     {
         "template-id" : "2",
         "template-desc" : "normal",
           "events": [
-            {"type": "SLEEP",   "start" : "02:10", "end" :"06:30", "meta-data": "none", "mandatory" : "YES"},
-            {"type": "PHONE", "start" : "06:40", "end" :"08:10", "meta-data": "none", "mandatory" : "NO"},
-            {"type": "EAT",   "start" : "09:00", "end" :"09:40", "meta-data": "none", "mandatory" : "YES"},
+            {"type": "SLEEP",   "start" : "02:10", "end" :"06:30", "meta-data": "0", "probability" : "1"},
+            {"type": "PHONE", "start" : "06:40", "end" :"08:10", "meta-data": "0", "probability" : "1"},
+            {"type": "EAT",   "start" : "09:00", "end" :"09:40", "meta-data": "0", "probability" : "1"}
             ]
      }
     ]

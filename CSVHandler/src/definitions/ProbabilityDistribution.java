@@ -5,4 +5,4 @@ package definitions;
  *
  * Normal - based on NORMAL distribution of elderly. RANDOM is not specific distributio
  */
-public  enum AgeDistribution { NORMAL, RANDOM}
+public  enum ProbabilityDistribution { NORMAL, RANDOM}
