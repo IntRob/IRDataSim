@@ -1,17 +1,18 @@
 {
   "simulation-numOfDailyTemplates": "5",
-  "simulation-numOfEvents": "1000",
-  "community-size": "20",
+  "simulation-numOfDays": "1000",
+  "community-size": "30",
   "community-minAge": "70",
   "community-maxAge": "85",
   "community-ageDirstibution": "Random",
   "community-percentageMale": "50",
+  "community-variance" : "0.1"
   "community-persona-split": [
     {
       "Number-of-persona-types": "3",
       "Persona0": "5",
-      "Persona1": "5",
-      "Persona2": "10"
+      "Persona1": "10",
+      "Persona2": "15"
     }
   ],
   

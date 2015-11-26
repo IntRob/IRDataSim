@@ -21,7 +21,7 @@ public class SimLoader {
     static private kYouProfile kProfile;
 
     // holds simulation params
-    static private SimulatedCommunity simConfig;
+    static private SimConfig simConfig;
 
     // holds the community profile
     static private SimulatedCommunity simulatedCommunity;
@@ -166,13 +166,16 @@ public class SimLoader {
             JSONObject json = (JSONObject) parser.parse(fileReader);
 
 
-            // load sim params
+            // load sim config params
             System.out.println("Reading sim params ");
 
             int numOfTemplates = (int) Integer.parseInt((String) json.get("simulation-numOfDailyTemplates"));
-            int numOfEvents = (int) Integer.parseInt((String) json.get("simulation-numOfEvents"));
+            int numOfDays = (int) Integer.parseInt((String) json.get("simulation-numOfDays"));
 
-            SimConfig simConfig = new SimConfig(numOfTemplates, numOfEvents);
+            SimConfig simConfig = new SimConfig(numOfTemplates, numOfDays);
+
+            // load community params
+
 
             /**
              *
@@ -181,6 +184,7 @@ public class SimLoader {
              "community-maxAge": "85",
              "community-ageDirstibution": "Random",
              "community-percentageMale": "50",
+             "community-variance" : "0.1",
              "communipersonaSplit": [
              {
              "0": "5",
@@ -190,17 +194,23 @@ public class SimLoader {
              ],
              */
             // load community profile
+
+            simulatedCommunity = new SimulatedCommunity();
             System.out.println("Reading community profile ");
 
-            int size = (int) Integer.parseInt((String) json.get("community-size"));
-            int minAge = (int) Integer.parseInt((String) json.get("community-minAge"));
-            int maxAge = (int) Integer.parseInt((String) json.get("community-maxAge"));
-            int malePrecente = (int) Integer.parseInt((String) json.get("community-percentageMale"));
+            simulatedCommunity.setSize(Integer.parseInt((String) json.get("community-size")));
+            simulatedCommunity.setMinAge(Integer.parseInt((String) json.get("community-minAge")));
+            simulatedCommunity.setMaxAge(Integer.parseInt((String) json.get("community-maxAge")));
+
             String ageDistribution = (String) json.get("community-ageDirstibution");
             AgeDistribution ageDist = AgeDistribution.NORMAL;
 
             if (ageDistribution.contentEquals(AgeDistribution.RANDOM.toString()))
                 ageDist = AgeDistribution.RANDOM;
+
+            simulatedCommunity.setAgeDistribution(ageDist);
+            simulatedCommunity.setMalePercentile(Integer.parseInt((String) json.get("community-percentageMale")));
+            simulatedCommunity.setVariance(Float.parseFloat((String) json.get("community-variance")));
 
 
             // loading persona split config
@@ -327,8 +337,12 @@ public class SimLoader {
         }
 
         System.out.println("ERROR: Template ID " + id + " not found");
-        System.exit(0);
+        System.exit(1);
+
         return null;
     }
 
+    public static SimulatedCommunity getSimulatedCommunity() {
+        return simulatedCommunity;
+    }
 }

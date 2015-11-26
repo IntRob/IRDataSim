@@ -32,6 +32,9 @@ public class SimulatedCommunity {
     // number of persona types in community
     private int personaTypeNum;
 
+    // vairance of behaviour of community population. How much they stick to their dailyroutine
+    private float variance;
+
     // hold all persona's
     private List<PersonaProfile> personaProfiles;
 
@@ -55,6 +58,35 @@ public class SimulatedCommunity {
         this.malePercentile = 50;
         this.personaProfiles = new ArrayList<PersonaProfile>();
     }
+
+    public void generatePopulation () {
+
+        int id = 0;
+
+        System.out.println("Generating population");
+
+        if(sumPersonaSplit() != this.size){
+            System.out.println("ERORR: population size and persona split numbers dont match in simulation config file");
+            System.exit(1);
+        }
+/*
+        // main people generation loop. for each persona type generate its people
+        for(int i = 0; i < personaSplit.length ; i++)
+            for(int j = 0; j < personaSplit[i] ; j++){
+                Person person = new Person();
+
+                person.setId(id);
+                person.
+
+
+
+
+            }
+
+*/
+
+    }
+
 
     public int getSize() {
         return size;
@@ -113,18 +145,6 @@ public class SimulatedCommunity {
         this.personaSplit = new int[personaTypeNum];
     }
 
-    @Override
-    public String toString() {
-        return "SimulatedCommunity{" +
-                "size=" + size +
-                ", minAge=" + minAge +
-                ", maxAge=" + maxAge +
-                ", ageDistribution=" + ageDistribution +
-                ", malePercentile=" + malePercentile +
-                ", personaSplit=" + Arrays.toString(personaSplit) +
-                '}';
-    }
-
     public List<PersonaProfile> getPersonaProfiles() {
         return personaProfiles;
     }
@@ -142,6 +162,42 @@ public class SimulatedCommunity {
         return personaProfiles.get(index);
     }
 
+    public float getVariance() {
+        return variance;
+    }
+
+    public void setVariance(float variance) {
+        this.variance = variance;
+    }
+
+    public void setPersonaProfiles(List<PersonaProfile> personaProfiles) {
+        this.personaProfiles = personaProfiles;
+    }
+
+    @Override
+    public String toString() {
+        return "SimulatedCommunity{" +
+                "size=" + size +
+                ", minAge=" + minAge +
+                ", maxAge=" + maxAge +
+                ", ageDistribution=" + ageDistribution +
+                ", malePercentile=" + malePercentile +
+                ", personaSplit=" + Arrays.toString(personaSplit) +
+                ", personaTypeNum=" + personaTypeNum +
+                ", variance=" + variance +
+                ", personaProfiles=" + personaProfiles +
+                '}';
+    }
+
+    private int sumPersonaSplit(){
+        int sum = 0;
+
+        for(int i = 0; i < this.personaSplit.length ; i++){
+            sum += this.personaSplit[i];
+        }
+
+        return sum;
+    }
 
 
 }

@@ -20,7 +20,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
 
 
-public class DataGen {
+public class DataSim {
 
     // input files directory
     static private String inputDirectory;
@@ -62,6 +62,9 @@ public class DataGen {
         System.out.println("loading simulation input file: " + simInputFileName);
         simLoader.readSimInputsJson(simInputFileName);
 
+        SimLoader.getSimulatedCommunity().generatePopulation();
+
+
 
         // generate synthetic people daily activities
         //SimulatedCommunity community = simLoader.getCommunity();
@@ -87,7 +90,7 @@ public class DataGen {
         outputDirectory = args[1];
 
         outputFilesPrefix = date.toString();
-        System.out.println("DataGen: output file prefix is " + outputFilesPrefix);
+        System.out.println("DataSim: output file prefix is " + outputFilesPrefix);
 
         return true;
 

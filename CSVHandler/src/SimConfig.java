@@ -10,15 +10,15 @@ public class SimConfig {
     private int numOfDailyTemplates = 0;
 
     // number of events to generate
-    private int numOfEvents = 0;
+    private int numOfDays = 0;
 
     public SimConfig() {
 
     }
 
-    public SimConfig(int numOfDailyTemplates, int numOfEvents) {
+    public SimConfig(int numOfDailyTemplates, int numOfDays) {
         this.numOfDailyTemplates = numOfDailyTemplates;
-        this.numOfEvents = numOfEvents;
+        this.numOfDays = numOfDays;
     }
 
     public int getNumOfDailyTemplates() {
@@ -30,18 +30,18 @@ public class SimConfig {
     }
 
     public int getNumOfEvents() {
-        return numOfEvents;
+        return numOfDays;
     }
 
     public void setNumOfEvents(int numOfEvents) {
-        this.numOfEvents = numOfEvents;
+        this.numOfDays = numOfEvents;
     }
 
     @Override
     public String toString() {
         return "SimConfig{" +
                 "numOfDailyTemplates=" + numOfDailyTemplates +
-                ", numOfEvents=" + numOfEvents +
+                ", numOfDays=" + numOfDays +
                 '}';
     }
 

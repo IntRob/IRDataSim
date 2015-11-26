@@ -18,7 +18,6 @@ public class SimEvent {
     // who generated the event. The elderly or the robot
     ActivityInitiator initiaor;
 
-
     // event type for person initiated events
     HomeEventType personActivityType = HomeEventType.NONE;
 

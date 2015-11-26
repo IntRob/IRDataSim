@@ -2,11 +2,9 @@ import definitions.BioClockType;
 import definitions.Gender;
 
 
-public class PersonalProfile {
+public class Person {
 
     private int id;
-
-
 
     private String decription;
     private int age;
@@ -30,18 +28,21 @@ public class PersonalProfile {
      * 0 - not at all
      * 1 - compeltely
      *
-     * This is used to generate the specific behaviour of the person
+     * This is used to generate the specific behaviour of the person. it is guided by the community overall variance
     * */
-    float variabnceFromTemplate;
+    float varianceFromTemplate;
 
-    public PersonalProfile(int id,
+    public Person() {
+    }
+
+    public Person(int id,
                            int age,
                            Gender gender,
                            PersonaProfile persona,
                            float socailAtt,
                            float nonHomeAtt,
                            float boredemAtt,
-                           float variabnceFromTemplate,
+                           float varianceFromTemplate,
                            BioClockType bio) {
         this.id = id;
         this.age = age;
@@ -50,13 +51,13 @@ public class PersonalProfile {
         this.socailAtt = socailAtt;
         this.nonHomeAtt = nonHomeAtt;
         this.boredemAtt = boredemAtt;
-        this.variabnceFromTemplate = variabnceFromTemplate;
+        this.varianceFromTemplate = varianceFromTemplate;
         this.bioType = bio;
     }
 
     @Override
     public String toString() {
-        return "PersonalProfile{" +
+        return "Persona details{" +
                 "id=" + id +
                 ", age=" + age +
                 ", gender=" + gender.toString() +
@@ -64,7 +65,7 @@ public class PersonalProfile {
                 ", socailAtt=" + socailAtt +
                 ", nonHomeAtt=" + nonHomeAtt+
                 ", boredemAtt=" + boredemAtt +
-                ", variabnceFromTemplate=" + variabnceFromTemplate +
+                ", varianceFromTemplate=" + varianceFromTemplate +
                 '}';
     }
 
@@ -116,12 +117,12 @@ public class PersonalProfile {
         this.boredemAtt = boredemAtt;
     }
 
-    public float getVariabnceFromTemplate() {
-        return variabnceFromTemplate;
+    public float getVarianceFromTemplate() {
+        return varianceFromTemplate;
     }
 
-    public void setVariabnceFromTemplate(float variabnceFromTemplate) {
-        this.variabnceFromTemplate = variabnceFromTemplate;
+    public void setVarianceFromTemplate(float varianceFromTemplate) {
+        this.varianceFromTemplate = varianceFromTemplate;
     }
 
     public Gender getGender() {
