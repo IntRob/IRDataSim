@@ -263,8 +263,8 @@ public class Person {
                 }
             }
 
-            System.out.println("DATA GEN: Adding event to person " + this.id);
-            System.out.println(event);
+            //System.out.println("DATA GEN: Adding event to person " + this.id);
+            //System.out.println(event);
             this.simEvents.add(event);
             currenTime += minutesInterval;
         }

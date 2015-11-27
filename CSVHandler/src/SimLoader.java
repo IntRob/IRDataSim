@@ -305,7 +305,7 @@ public class SimLoader {
                 profile = simulatedCommunity.getPersonaProfile(index);
 
                 System.out.println("loading persona " + profile.getName());
-                System.out.println("Persona details: " + obj);
+                //System.out.println("Persona details: " + obj);
 
                 profile.setTypeDescriptor((String) obj.get("description"));
 
