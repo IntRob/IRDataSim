@@ -6,42 +6,36 @@
  */
 public class SimConfig {
 
-    // number of daily templates to load
-    private int numOfDailyTemplates = 0;
+    // number of simulation days to generate
+    private int numOfSimDays = 0;
 
-    // number of events to generate
-    private int numOfDays = 0;
+    // hardcoded for now
+    private int timeIntervalBetweenEvents = 5;
 
     public SimConfig() {
 
     }
 
-    public SimConfig(int numOfDailyTemplates, int numOfDays) {
-        this.numOfDailyTemplates = numOfDailyTemplates;
-        this.numOfDays = numOfDays;
+    public SimConfig(int numOfDays) {
+        this.numOfSimDays = numOfDays;
     }
 
-    public int getNumOfDailyTemplates() {
-        return numOfDailyTemplates;
+    public int getNumOfSimDays() {
+        return numOfSimDays;
     }
 
-    public void setNumOfDailyTemplates(int numOfDailyTemplates) {
-        this.numOfDailyTemplates = numOfDailyTemplates;
+    public void setNumOfSimDays(int numOfSimDays) {
+        this.numOfSimDays = numOfSimDays;
     }
 
-    public int getNumOfEvents() {
-        return numOfDays;
-    }
-
-    public void setNumOfEvents(int numOfEvents) {
-        this.numOfDays = numOfEvents;
+    public int getTimeIntervalBetweenEvents() {
+        return timeIntervalBetweenEvents;
     }
 
     @Override
     public String toString() {
         return "SimConfig{" +
-                "numOfDailyTemplates=" + numOfDailyTemplates +
-                ", numOfDays=" + numOfDays +
+                ", numOfDays=" + numOfSimDays +
                 '}';
     }
 

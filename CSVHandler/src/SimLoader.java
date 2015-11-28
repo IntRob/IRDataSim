@@ -1,4 +1,4 @@
-import definitions.AgeDistribution;
+import definitions.ProbabilityDistribution;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -35,9 +35,13 @@ public class SimLoader {
 
         simulatedCommunity = new SimulatedCommunity();
         dailyTemplates = new ArrayList<DailyTemplate>();
+        simConfig = new SimConfig();
 
-        // for now using the default hard coded kYou profile
+        // for now using the default hardcoded kYou profile
         kProfile = new kYouProfile();
+        kProfile.setStartHourOfOperation(6);
+        kProfile.setEndHourOfOperation(23);
+        kProfile.setMaxNumberOfDailyInterventions(50);
 
     }
 
@@ -54,29 +58,29 @@ public class SimLoader {
          "daily-templates" : [
          {
          "template-id" : "1",
-         "template-name" : "normal",
+         "template-desc" : "normal",
          "events": [
-         {"type": "TOILET",  "start" : "02:00", "end" :"02:10", "meta-data": "none", "mandatory" : "NO"},
-         {"type": "SLEEP",   "start" : "02:10", "end" :"06:30", "meta-data": "none", "mandatory" : "YES"},
-         {"type": "DOPHONE", "start" : "06:40", "end" :"08:10", "meta-data": "none", "mandatory" : "NO"},
-         {"type": "DDEAT",   "start" : "09:00", "end" :"09:40", "meta-data": "none", "mandatory" : "YES"},
-         {"type": "DOTV",    "start" : "10:00", "end" :"22:10", "meta-data": "none", "mandatory" : "NO"}
+         {"type": "TOILET",  "start" : "00:00", "end" :"02:10", "meta-data": "none", "probability" : "0.5"},
+         {"type": "SLEEP",   "start" : "02:10", "end" :"06:30", "meta-data": "none", "probability" : "1"},
+         {"type": "EAT",   "start" : "09:00", "end" :"09:40", "meta-data": "none", "probability" : "1"},
+         {"type": "TV",    "start" : "10:00", "end" :"14:10", "meta-data": "none", "probability" : "1"}
+         {"type": "MOOD",    "start" : "15:00", "end" :"15:20", "meta-data": "NEUTRAL", "probability" : "0"},
+         {"type": "EAT",   "start" : "18:20", "end" :"19:00", "meta-data": "none", "probability" : "1"},
+         {"type": "TOILET",  "start" : "21:30", "end" :"21:40", "meta-data": "none", "probability" : "0.8"},
+         {"type": "SLEEP",   "start" : "22:10", "end" :"00:00", "meta-data": "none", "probability" : "1"},
          ]
          },
 
          {
          "template-id" : "2",
-         "template-name" : "normal",
+         "template-desc" : "normal",
          "events": [
-         {"type": "TOILET",  "start" : "02:00", "end" :"02:10", "meta-data": "none", "mandatory" : "NO"},
-         {"type": "SLEEP",   "start" : "02:10", "end" :"06:30", "meta-data": "none", "mandatory" : "YES"},
-         {"type": "DOPHONE", "start" : "06:40", "end" :"08:10", "meta-data": "none", "mandatory" : "NO"},
-         {"type": "DDEAT",   "start" : "09:00", "end" :"09:40", "meta-data": "none", "mandatory" : "YES"},
-         {"type": "DOTV",    "start" : "10:00", "end" :"22:10", "meta-data": "none", "mandatory" : "NO"}
+         {"type": "SLEEP",   "start" : "02:10", "end" :"06:30", "meta-data": "none", "probability" : "1"},
+         {"type": "PHONE", "start" : "06:40", "end" :"08:10", "meta-data": "none", "probability" : "0.3"},
+         {"type": "EAT",   "start" : "09:00", "end" :"09:40", "meta-data": "none", "probability" : "0.9"},
          ]
          }
          ]
-
          }
          * @param fileName
          */
@@ -127,21 +131,21 @@ public class SimLoader {
                     String eventTypeStr = (String)eventsObj.get("type");
                     String startTimeStr = (String) eventsObj.get("start");
                     String endTimeStr = (String) eventsObj.get("end");
-                    String metaDataStr = (String) eventsObj.get("meta-data");
-                    String mandatoryStr = (String) eventsObj.get("mandatory");
+                    int metaData = Integer.parseInt((String)eventsObj.get("meta-data"));
+                    double probability =  Double.parseDouble((String) eventsObj.get("probability"));
 
                     event.setType(eventTypeStr);
                     event.setStartDate(startTimeStr);
                     event.setEndDate(endTimeStr);
-                    event.setMetaData(metaDataStr);
-                    event.setMandatoryEvent(mandatoryStr);
+                    event.setMetaData(metaData);
+                    event.setProbability(probability);
                     template.addEvent(event);
                     //System.out.println("event loaded");
                 }
 
                 dailyTemplates.add(template);
                 System.out.println("TEMPLATE LOADED");
-                System.out.println(template);
+                //System.out.println(template);
             }
 
         } catch (Exception e) {
@@ -168,34 +172,40 @@ public class SimLoader {
 
             // load sim config params
             System.out.println("Reading sim params ");
+            System.out.println("Reading simulation configuration profile ");
 
-            int numOfTemplates = (int) Integer.parseInt((String) json.get("simulation-numOfDailyTemplates"));
             int numOfDays = (int) Integer.parseInt((String) json.get("simulation-numOfDays"));
 
-            SimConfig simConfig = new SimConfig(numOfTemplates, numOfDays);
+            simConfig = new SimConfig(numOfDays);
 
             // load community params
 
 
             /**
              *
-             "community-size": "20",
+             "simulation-numOfDailyTemplates": "5",
+             "simulation-numOfDays": "1000",
+             "community-size": "30",
              "community-minAge": "70",
              "community-maxAge": "85",
              "community-ageDirstibution": "Random",
+             "community-bioClockDistribution": "Random",
              "community-percentageMale": "50",
-             "community-variance" : "0.1",
-             "communipersonaSplit": [
+             "community-variance" : "0.5"
+             "community-persona-split": [
              {
-             "0": "5",
-             "1": "5",
-             "2": "10"
+             "Number-of-persona-types": "3",
+             "Persona0": "5",
+             "Persona1": "10",
+             "Persona2": "15"
              }
              ],
              */
             // load community profile
 
             simulatedCommunity = new SimulatedCommunity();
+
+
             System.out.println("Reading community profile ");
 
             simulatedCommunity.setSize(Integer.parseInt((String) json.get("community-size")));
@@ -203,14 +213,23 @@ public class SimLoader {
             simulatedCommunity.setMaxAge(Integer.parseInt((String) json.get("community-maxAge")));
 
             String ageDistribution = (String) json.get("community-ageDirstibution");
-            AgeDistribution ageDist = AgeDistribution.NORMAL;
+            ProbabilityDistribution distribution = ProbabilityDistribution.NORMAL;
 
-            if (ageDistribution.contentEquals(AgeDistribution.RANDOM.toString()))
-                ageDist = AgeDistribution.RANDOM;
+            if (ageDistribution.contentEquals(ProbabilityDistribution.RANDOM.toString()))
+                distribution = ProbabilityDistribution.RANDOM;
 
-            simulatedCommunity.setAgeDistribution(ageDist);
+            simulatedCommunity.setAgeDistribution(distribution);
             simulatedCommunity.setMalePercentile(Integer.parseInt((String) json.get("community-percentageMale")));
-            simulatedCommunity.setVariance(Float.parseFloat((String) json.get("community-variance")));
+            simulatedCommunity.setVariance(Double.parseDouble((String) json.get("community-variance")));
+
+
+            String BioClockDistribution = (String) json.get("community-bioClockDistribution");
+            distribution = ProbabilityDistribution.NORMAL;
+
+            if (BioClockDistribution.contentEquals(ProbabilityDistribution.RANDOM.toString()))
+                distribution = ProbabilityDistribution.RANDOM;
+
+            simulatedCommunity.setBioClockDistribution(distribution);
 
 
             // loading persona split config
@@ -256,22 +275,19 @@ public class SimLoader {
             }
 
             /**
-             * load persona details
-             * "personas": [
-             {
-             "id": "Persona1",
-             "description": "Germen",
-             "weekdaytemplateID": "1",
-             "weekendtemplateID": "1",
-             "attToMusic" : "10",
-             "attToaBook" : "5",
-             "attToPhysical" : "7",
-             "attToSocial" : "10",
-             "attToRoutine" : "10",
-             "attToSmallTalk" : "1"
+             * load persona's profiles
 
-             },
-
+             "name" : "Persona2",
+             "description": "Happy",
+             "weekdaytemplateID": "2",
+             "weekendtemplateID": "2",
+             "attToMusic" : "0.4",
+             "attToBook" : "0.5",
+             "attToPhysical" : "0.6",
+             "attToTV" : "0.7",
+             "attToSocial" : "0.8",
+             "attToSkype" : "0.9",
+             "attToRoutine" : "1"
 
 
              */
@@ -289,27 +305,28 @@ public class SimLoader {
                 profile = simulatedCommunity.getPersonaProfile(index);
 
                 System.out.println("loading persona " + profile.getName());
-                System.out.println("Persona details: " + obj);
+                //System.out.println("Persona details: " + obj);
 
                 profile.setTypeDescriptor((String) obj.get("description"));
 
                 String weekdayRoutineID = ((String) obj.get("weekdaytemplateID"));
-                profile.setWeekdayRoutine(getDailyTemplateByID((int) Integer.parseInt(weekdayRoutineID)));
+                profile.setWeekdayRoutine(getDailyTemplateByID(Integer.parseInt(weekdayRoutineID)));
 
                 String weekendRoutineID = ((String) obj.get("weekendtemplateID"));
-                profile.setWeekendRoutine(getDailyTemplateByID((int) Integer.parseInt(weekendRoutineID)));
+                profile.setWeekendRoutine(getDailyTemplateByID(Integer.parseInt(weekendRoutineID)));
+
 
                 // load attitude for each activity
-                profile.setAttToMusic(Integer.parseInt((String) obj.get("attToMusic")));
-                profile.setAttToPhone(Integer.parseInt((String) obj.get("attToPhone")));
-                profile.setAttToTV(Integer.parseInt((String) obj.get("attToTV")));
-                profile.setAttToPhysical(Integer.parseInt((String) obj.get("attToPhysical")));
-                profile.setAttToSocial(Integer.parseInt((String) obj.get("attToSocial")));
-                profile.setAttToBook(Integer.parseInt((String) obj.get("attToBook")));
-                profile.setAttToRoutine(Integer.parseInt((String) obj.get("attToRoutine")));
+                profile.setAttToMusic(Double.parseDouble((String) obj.get("attToMusic")));
+                profile.setAttToPhone(Double.parseDouble((String) obj.get("attToSkype")));
+                profile.setAttToTV(Double.parseDouble((String) obj.get("attToTV")));
+                profile.setAttToPhysical(Double.parseDouble((String) obj.get("attToPhysical")));
+                profile.setAttToSocial(Double.parseDouble((String) obj.get("attToSocial")));
+                profile.setAttToBook(Double.parseDouble((String) obj.get("attToBook")));
+                profile.setAttToRoutine(Double.parseDouble((String) obj.get("attToRoutine")));
 
                 System.out.println("Persona profile loaded");
-                System.out.println(profile);
+                //System.out.println(profile);
 
             }
 
@@ -319,8 +336,6 @@ public class SimLoader {
             System.out.println(e);
 
         }
-
-
 
     }
 
@@ -342,7 +357,13 @@ public class SimLoader {
         return null;
     }
 
+
+
     public static SimulatedCommunity getSimulatedCommunity() {
         return simulatedCommunity;
+    }
+
+    public static SimConfig getSimConfig() {
+        return simConfig;
     }
 }

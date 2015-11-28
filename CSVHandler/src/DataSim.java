@@ -4,20 +4,7 @@
 
 
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Date;
-import java.io.FileReader;
-import java.util.ListIterator;
-
-import definitions.AgeDistribution;
-import definitions.HomeEventType;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.JSONArray;
-import org.json.simple.parser.ParseException;
 
 
 public class DataSim {
@@ -27,6 +14,10 @@ public class DataSim {
 
     // output files directory
     static private String outputDirectory;
+
+    // output file name
+    static private String outputFileName;
+
 
     // each simulation generates new files names by using the timestamp as a prefix
     static private String outputFilesPrefix;
@@ -39,6 +30,9 @@ public class DataSim {
 
     // Simulation input loader
     static private SimLoader simLoader = new SimLoader();
+
+    // Simulation output handler
+    static private SimOutputer simOutputer = new SimOutputer();
 
 
     public static void main(String [ ] args)
@@ -54,21 +48,33 @@ public class DataSim {
         simLoader = new SimLoader();
 
         simInputFileName = new String(inputDirectory + "/" + simDailyTemplatesFileName);
-        System.out.println("loading daily templates input file: " + simConfigFileName);
+        System.out.println("DATAGEN : loading daily templates input file: " + simConfigFileName);
         simLoader.readDailyTemplatesJson(simInputFileName);
 
 
         simInputFileName = new String(inputDirectory + "/" + simConfigFileName);
-        System.out.println("loading simulation input file: " + simInputFileName);
+        System.out.println("DATAGEN : loading simulation input file: " + simInputFileName);
         simLoader.readSimInputsJson(simInputFileName);
 
-        SimLoader.getSimulatedCommunity().generatePopulation();
+        SimulatedCommunity community = SimLoader.getSimulatedCommunity();
 
+        // gemerate all people in community
+        community.generatePopulation(SimLoader.getSimConfig().getTimeIntervalBetweenEvents());
 
+        // generate all the events of the community
+        System.out.println("DATAGEN : Generating events");
+        community.generateEvents(SimLoader.getSimConfig().getNumOfSimDays());
 
-        // generate synthetic people daily activities
-        //SimulatedCommunity community = simLoader.getCommunity();
-        //community.generatePopulation(simLoader);
+        // prepare for output
+        simOutputer.setOutFileName(outputFileName);
+        simOutputer.setOutputDir(outputDirectory);
+        simOutputer.prepFile();
+
+        // dump events to output CSV file
+        community.createSimEventsCSV(simOutputer);
+
+        // close output
+        simOutputer.closeOutputer();
 
 
     }
@@ -89,8 +95,11 @@ public class DataSim {
         inputDirectory = args[0];
         outputDirectory = args[1];
 
-        outputFilesPrefix = date.toString();
-        System.out.println("DataSim: output file prefix is " + outputFilesPrefix);
+        outputFilesPrefix = new String(date.getDay() + "-" + date.getHours() + "-" + date.getMinutes() + "IRSimOut.csv");
+        System.out.println("DataSim: output file prefix is " + date.getDay() + date.getHours() + date.getMinutes());
+
+        outputFileName = outputFilesPrefix;
+        System.out.println("DataSim: output file name is " + outputFileName);
 
         return true;
 

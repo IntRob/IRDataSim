@@ -45,6 +45,11 @@ public class kYouProfile {
         this.endHourOfOperation = endHourOfOperation;
     }
 
+    public int getMaxNumberOfDailyInterventions() {
+        return maxNumberOfDailyInterventions;
+    }
 
-
+    public void setMaxNumberOfDailyInterventions(int maxNumberOfDailyInterventions) {
+        this.maxNumberOfDailyInterventions = maxNumberOfDailyInterventions;
+    }
 }

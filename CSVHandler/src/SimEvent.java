@@ -12,14 +12,17 @@ public class SimEvent {
     // the ID of kYou user
     int personID;
 
-    // event time stamp - only yy-mm-dd, hh-mm . seconds and below is not in use
-    Timestamp timeStamp;
+    // event time stamp - dd-hh-mm . seconds and below is not in use
+    int dayNum;
+    int hour;
+    int minute;
+
 
     // who generated the event. The elderly or the robot
     ActivityInitiator initiaor;
 
     // event type for person initiated events
-    HomeEventType personActivityType = HomeEventType.NONE;
+    HomeEventType personActivityType = HomeEventType.UNKNOWN;
 
     // event type for kYou initiated events
     kYouActivities kYouActivityType = kYouActivities.NONE;
@@ -30,29 +33,12 @@ public class SimEvent {
     public SimEvent() {
     }
 
-    public SimEvent(int personID, Timestamp timeStamp, ActivityInitiator initiaor, HomeEventType personActivityType, kYouActivities kYouActivityType, int metaData) {
-        this.personID = personID;
-        this.timeStamp = timeStamp;
-        this.initiaor = initiaor;
-        this.personActivityType = personActivityType;
-        this.kYouActivityType = kYouActivityType;
-        this.metaData = metaData;
-    }
-
     public int getPersonID() {
         return personID;
     }
 
     public void setPersonID(int personID) {
         this.personID = personID;
-    }
-
-    public Timestamp getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(Timestamp timeStamp) {
-        this.timeStamp = timeStamp;
     }
 
     public ActivityInitiator getInitiaor() {
@@ -87,15 +73,61 @@ public class SimEvent {
         this.metaData = metaData;
     }
 
+    public int getDayNum() {
+        return dayNum;
+    }
+
+    public void setDayNum(int dayNum) {
+        this.dayNum = dayNum;
+    }
+
+    public int getHour() {
+        return hour;
+    }
+
+    public void setHour(int hour) {
+        this.hour = hour;
+    }
+
+    public int getMinute() {
+        return minute;
+    }
+
+    public void setMinute(int minute) {
+        this.minute = minute;
+    }
+
     @Override
     public String toString() {
         return "SimEvent{" +
-                "personID=" + personID +
-                ", timeStamp=" + timeStamp +
+                "personID= " + personID +
+                ", timestamp (dd:hh:mm)= " + dayNum +
+                ":" + hour +
+                ":" + minute +
                 ", initiaor=" + initiaor +
                 ", personActivityType=" + personActivityType +
                 ", kYouActivityType=" + kYouActivityType +
                 ", metaData=" + metaData +
                 '}';
+    }
+
+    public String toCSVLine(){
+
+        String initiatorStr = ActivityInitiator.PERSON.toString();
+        String activityTypeStr = personActivityType.toString();
+
+        if(kYouActivityType != kYouActivities.NONE) {
+            initiatorStr = ActivityInitiator.KYOU.toString();
+            activityTypeStr = kYouActivityType.toString();
+        }
+
+        String csvString =
+                personID +
+                "," + dayNum + ":" + hour + ":" + minute +
+                "," + initiatorStr +
+                "," + activityTypeStr +
+                        "," + metaData + "\n";
+
+        return csvString;
     }
 }
