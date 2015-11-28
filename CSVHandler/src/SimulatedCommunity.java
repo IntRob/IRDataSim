@@ -78,7 +78,7 @@ public class SimulatedCommunity {
      * Generates the people that are part of the community
      */
 
-    public void generatePopulation (int timeInterval) {
+    public void generatePopulation (int timeInterval, kYouProfile kProfile) {
 
         int id = 0;
         Random rand = new Random();
@@ -106,6 +106,9 @@ public class SimulatedCommunity {
 
                 // all people have the same variance from template
                 person.setVarianceFromTemplate(variance,timeInterval);
+
+                // assign a kYou profile for that person. for now all community get the same kYou Profile
+                person.setMykYYouProfile(kProfile);
 
                 person.setId(id);
                 System.out.println("Generating person " + person.getId());

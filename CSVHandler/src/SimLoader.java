@@ -39,8 +39,13 @@ public class SimLoader {
 
         // for now using the default hardcoded kYou profile
         kProfile = new kYouProfile();
-        kProfile.setStartHourOfOperation(6);
-        kProfile.setEndHourOfOperation(23);
+
+        // turn kYou on
+        kProfile.setOnButton(true);
+        kProfile.setStartMinOfDayOperation(6 * 60); // starts operating from 06:00
+        kProfile.setEndMinOfDayOperation(23 * 60);  // stop at 23:00
+
+        // FOR NOW THIS PARAMETER IS IGNORED
         kProfile.setMaxNumberOfDailyInterventions(50);
 
     }
@@ -358,6 +363,13 @@ public class SimLoader {
     }
 
 
+    public static kYouProfile getkProfile() {
+        return kProfile;
+    }
+
+    public static void setkProfile(kYouProfile kProfile) {
+        SimLoader.kProfile = kProfile;
+    }
 
     public static SimulatedCommunity getSimulatedCommunity() {
         return simulatedCommunity;

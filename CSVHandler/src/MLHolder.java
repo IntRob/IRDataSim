@@ -54,6 +54,8 @@ public class MLHolder {
         ListIterator<SimEvent> iterator = rawEvents.listIterator();
         while (iterator.hasNext()) {
             SimEvent rawEvent = iterator.next();
+
+        /*
             if (rawEvent.getkYouActivityType() == kYouActivities.SUGGESTWALK) // looks for all walk activities in the raw data
             {
                 MLEvent mlEvent = new MLEvent(rawEvent.getPersonID(),rawEvent.getTimeStamp(),rawEvent.getkYouActivityType(),rawEvent.getMetaData());
@@ -65,6 +67,7 @@ public class MLHolder {
 
                 System.out.println("WalkML" + mlEvent);
             }
+            */
         }
     }
 
@@ -74,6 +77,7 @@ public class MLHolder {
         ListIterator<SimEvent> iterator = rawEvents.listIterator();
         while (iterator.hasNext()) {
             SimEvent rawEvent = iterator.next();
+           /*
             if (rawEvent.getkYouActivityType() == kYouActivities.SUGGESTMUSIC) // looks for all walk activities in the raw data
             {
                 MLEvent mlEvent = new MLEvent(rawEvent.getPersonID(),rawEvent.getTimeStamp(),rawEvent.getkYouActivityType(),rawEvent.getMetaData());
@@ -85,6 +89,7 @@ public class MLHolder {
 
                 System.out.println("MusicML" + mlEvent);
             }
+            */
         }
     }
 

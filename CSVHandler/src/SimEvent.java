@@ -33,6 +33,17 @@ public class SimEvent {
     public SimEvent() {
     }
 
+    public SimEvent(int personID, int dayNum, int hour, int minute, ActivityInitiator initiaor, HomeEventType personActivityType, kYouActivities kYouActivityType, int metaData) {
+        this.personID = personID;
+        this.dayNum = dayNum;
+        this.hour = hour;
+        this.minute = minute;
+        this.initiaor = initiaor;
+        this.personActivityType = personActivityType;
+        this.kYouActivityType = kYouActivityType;
+        this.metaData = metaData;
+    }
+
     public int getPersonID() {
         return personID;
     }

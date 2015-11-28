@@ -1,6 +1,6 @@
 {
-  "simulation-numOfDays": "3",
-  "community-size": "3",
+  "simulation-numOfDays": "5",
+  "community-size": "6",
   "community-minAge": "70",
   "community-maxAge": "85",
   "community-ageDirstibution": "Random",
@@ -10,9 +10,9 @@
   "community-persona-split": [
     {
       "Number-of-persona-types": "3",
-      "Persona0": "1",
-      "Persona1": "1",
-      "Persona2": "1"
+      "Persona0": "2",
+      "Persona1": "2",
+      "Persona2": "2"
     }
   ],
   

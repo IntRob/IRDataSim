@@ -1,7 +1,4 @@
-import definitions.ActivityInitiator;
-import definitions.BioClockType;
-import definitions.Gender;
-import definitions.HomeEventType;
+import definitions.*;
 
 import java.lang.reflect.AccessibleObject;
 import java.text.DecimalFormat;
@@ -60,9 +57,13 @@ public class Person {
     /* person weekend daily profile */
     private List<SimpleDailyEvent> weekEndDayTemplateEvents;
 
+    /* person assigned kYou Profile */
+    private kYouProfile mykYou;
+
 
     public Person() {
         simEvents = new ArrayList<SimEvent>();
+        mykYou = new kYouProfile();
     }
 
 
@@ -121,7 +122,12 @@ public class Person {
 
         boolean weekEndFlag;
 
+
+
         for(int day = 1 ; day < numberOfDays+1 ; day++) {
+            // reset kYou log
+            mykYou.setLastSuggestedActivityTimeStamp(0);
+
             weekEndFlag = false;
 
             if (((day % 6) == 0) || ((day % 7) == 0))
@@ -193,7 +199,9 @@ public class Person {
         double eventProbability;
         double factoredProbability;
         Random rand = new Random();
+
         boolean eventIsOn = false;
+
         int endEventTime = 0;
         SimpleDailyEvent templateEvent;
         SimpleDailyEvent eventInProgress = null;
@@ -202,7 +210,7 @@ public class Person {
 
         for (int timeSlot = 0; timeSlot < (24 * 60) / minutesInterval; timeSlot++) {
             SimEvent event = new SimEvent();
-
+            boolean kEventAddedFlag = false;
             event.setPersonID(this.id);
             event.setDayNum(dayID);
             event.setHour(currenTime / 60);
@@ -221,19 +229,77 @@ public class Person {
                     event.setInitiaor(ActivityInitiator.PERSON);
                     event.setPersonActivityType(eventInProgress.getType());
 
-                    if (eventInProgress.getType() == HomeEventType.MOOD)
+                    if (eventInProgress.getType() == HomeEventType.MOOD) {
+                        // "dress up" a mood event to be kYou initiated
                         event.setMetaData(eventInProgress.getMetaData());
+                        event.setInitiaor(ActivityInitiator.KYOU);
+                        event.setkYouActivityType(kYouActivities.CHECKMOOD);
+                        event.setPersonActivityType(HomeEventType.UNKNOWN);
+
+                    }
                 } else
-                // now event in progress and no new event
+                // no event in progress and no new event
                 {
                     eventIsOn = false;
                     eventInProgress = null;
-                    //System.out.println("DATA GEN: Time for kYou to decide if to initiate an event ");
-                    // decide if to generate a kYou event
-                    // if yes
-                    // generate kYou event
-                    // generate kYou event casue (insert to event list)
-                    // if not, generate UNKNOWENEVENT
+
+                    /*
+                        logic for evaluating and generating a kYou driven event.
+                        If kYou suggestion is accepted, a new event
+
+
+                     */
+                    System.out.println("DATA GEN: kYou deciding if to generate an intervention");
+
+                    if( mykYou.wantToSuggestAnActivity(currenTime)) {
+                        System.out.println("DATA GEN: potential kYou event generated ");
+
+                        kYouActivities kActivity = mykYou.generateActivitySuggestion();
+                        System.out.println("DATA GEN: potential kYou event (" + kActivity + ") is evaluated ");
+
+                        //generate cause event
+                        //if accepted, then generate affect
+                        SimEvent kYouEvent = new SimEvent(this.id, dayID, event.getHour(), event.getMinute(),
+                                ActivityInitiator.KYOU, HomeEventType.UNKNOWN, kActivity, 0);
+
+                        simEvents.add(kYouEvent);
+
+                        mykYou.setLastSuggestedActivity(kActivity);
+                        mykYou.setLastSuggestedActivityTimeStamp(currenTime);
+
+                        System.out.println("DATA GEN: Adding a new kYou event");
+                        System.out.println(kYouEvent);
+
+                        if(acceptKYouActivity(kActivity)){
+
+                            // generate affect event (for now a single instance, 1 minute later after kYou suggestion
+                            System.out.println("DATA GEN: kYou event (" + kActivity + ") was accepted ");
+
+                            // convert kYou activity to effect event on person (e.g. suggestmusic--> music
+
+                            SimEvent kYouDrivenEvent = new SimEvent();
+                            kYouDrivenEvent.setPersonID(this.id);
+                            kYouDrivenEvent.setDayNum(dayID);
+                            kYouDrivenEvent.setHour(event.getHour());
+                            kYouDrivenEvent.setMinute(event.getMinute() + 1);
+                            kYouDrivenEvent.setInitiaor(ActivityInitiator.PERSON);
+                            kYouDrivenEvent.setPersonActivityType(mykYou.convertCasueToAffect(kActivity));
+                            kYouDrivenEvent.setMetaData(0);
+
+                            simEvents.add(kYouDrivenEvent);
+
+                            System.out.println("DATA GEN: Adding a new kYou event");
+                            System.out.println(kYouDrivenEvent);
+                            kEventAddedFlag = true;
+
+                        }
+                        // decide which event to try (random)
+                        // check if event was accepeted by person (based on persona and person specific attributes)
+                        // if event was accepted, generate related event actions and update flags/time counters
+
+                    } else {
+                        System.out.println("DATA GEN: kYou event rejected due to kYou ops time or last interval (" + currenTime + ")");
+                    }
                 }
 
             } else
@@ -247,14 +313,25 @@ public class Person {
                 // generate event only if probability
                 if (eventProbability > 0) {
                     if ((eventProbability == 1) || (eventProbability > random)) {
+
                         // set event attirbutes
                         event.setInitiaor(ActivityInitiator.PERSON);
                         event.setPersonActivityType(templateEvent.getType());
-                        if (templateEvent.getType() == HomeEventType.MOOD)
+
+                        // check if a Mood event. if yes, generate it as a kYou evnet.
+                        if (templateEvent.getType() == HomeEventType.MOOD) {
+
+                            // make it look like it is a kYou moodcheck event
                             event.setMetaData(templateEvent.getMetaData());
+                            event.setInitiaor(ActivityInitiator.KYOU);
+                            event.setkYouActivityType(kYouActivities.CHECKMOOD);
+                            event.setPersonActivityType(HomeEventType.UNKNOWN);
+
+                        }
 
                         eventInProgress = templateEvent;
                         eventIsOn = true;
+
                     } else {
                         System.out.println("Event didnt pass probability. EventProbability:" + eventProbability + ", random:" + random);
                         System.out.println(templateEvent);
@@ -263,9 +340,12 @@ public class Person {
                 }
             }
 
-            //System.out.println("DATA GEN: Adding event to person " + this.id);
-            //System.out.println(event);
-            this.simEvents.add(event);
+            if(kEventAddedFlag == false) {
+                System.out.println("DATA GEN: Adding event to person " + this.id);
+                System.out.println(event);
+                this.simEvents.add(event);
+            }
+
             currenTime += minutesInterval;
         }
             // update flags and state, endTime
@@ -417,28 +497,51 @@ public class Person {
         this.minutesInterval = minutesInterval;
     }
 
+    public kYouProfile getMykYYouProfile() {
+        return mykYou;
+    }
+
+    public void setMykYYouProfile(kYouProfile kProfile) {
+        this.mykYou = kProfile;
+    }
+
     @Override
     public String toString() {
-
-
-        return "Person-" +
+        return "Person{" +
                 "id=" + id +
-                " { age=" + age +
+                ", age=" + age +
                 ", gender=" + gender +
-                ", persona name=" + persona.getName() +
+                ", persona=" + persona +
                 ", attToSkype=" + attToSkype +
                 ", attToMusic=" + attToMusic +
                 ", attToTV=" + attToTV +
                 ", attToBook=" + attToBook +
                 ", attToPhysical=" + attToPhysical +
                 ", attToSocial=" + attToSocial +
+                ", minutesInterval=" + minutesInterval +
                 ", bioType=" + bioType +
                 ", varianceFromTemplate=" + varianceFromTemplate +
-                ", EVENTS=" + simEvents +
+                ", simEvents=" + simEvents +
+                //", weekDayTemplateEvents=" + weekDayTemplateEvents +
+                //", weekEndDayTemplateEvents=" + weekEndDayTemplateEvents +
+                ", mykYou=" + mykYou +
                 '}';
     }
 
-    /*
+
+    /**
+     * Decides if the person accepts the activity suggested by kYou.
+     * The decision is based on the person attitude to different activites, and his variance (to have some random effect)
+     *
+     * FOR NOW ALWAYS ACCEPTS REGARDLESS OF PROFILE
+     * @param suggestedActivity
+     * @return
+     */
+    private boolean acceptKYouActivity(kYouActivities suggestedActivity){
+
+        return true;
+    }
+  /*
     * pass over person day event templates and update the start/end time based on variance input.
     * The variance is within a 1 hour window. 20% means originial time +60*20% , -60*20% (rounded to 5 min jumps)
     *

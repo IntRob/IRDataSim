@@ -58,8 +58,8 @@ public class DataSim {
 
         SimulatedCommunity community = SimLoader.getSimulatedCommunity();
 
-        // gemerate all people in community
-        community.generatePopulation(SimLoader.getSimConfig().getTimeIntervalBetweenEvents());
+        // Generate people in community
+        community.generatePopulation(SimLoader.getSimConfig().getTimeIntervalBetweenEvents(), SimLoader.getkProfile());
 
         // generate all the events of the community
         System.out.println("DATAGEN : Generating events");
