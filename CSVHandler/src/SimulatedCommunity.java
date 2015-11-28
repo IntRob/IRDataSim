@@ -275,7 +275,7 @@ public class SimulatedCommunity {
 
 
     /* dump all people simulation events into a csv file */
-    public void createSimEventsCSV(SimOutputer outputer) {
+    public void createSimEventsCSV(SimOutputManager outputer) {
 
         for (int i = 0; i < size; i++) {
             Person person = peopleRecords.get(i);

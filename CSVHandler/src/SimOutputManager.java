@@ -1,23 +1,21 @@
-
 import java.io.*;
 
 /**
- * Handle simulation output into files
- * Created by admin on 11/26/15.
+ * Created by admin on 11/28/15.
  */
-public class SimOutputer {
+public class SimOutputManager {
 
     private String outFileName;
     private String outputDir;
 
     private Writer writer;
 
-    public SimOutputer(String outFileName, String outputDir) {
+    public SimOutputManager(String outFileName, String outputDir) {
         this.outFileName = outFileName;
         this.outputDir = outputDir;
     }
 
-    public SimOutputer() {
+    public SimOutputManager() {
     }
 
     public void prepFile(){

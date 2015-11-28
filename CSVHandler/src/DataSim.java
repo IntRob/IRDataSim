@@ -32,7 +32,7 @@ public class DataSim {
     static private SimLoader simLoader = new SimLoader();
 
     // Simulation output handler
-    static private SimOutputer simOutputer = new SimOutputer();
+    static private SimOutputManager simOutputer = new SimOutputManager();
 
 
     public static void main(String [ ] args)
