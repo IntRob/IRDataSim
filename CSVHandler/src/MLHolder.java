@@ -195,7 +195,7 @@ public class MLHolder {
             case MOOD_ANGRY:
                 return Moods.ANGRY;
             default:
-                return Moods.NONE;
+                return Moods.UNKNOWN;
         }
     }
 }

@@ -5,5 +5,5 @@ package definitions;
  *
  * Defines the possible moods of the elder
  */
-public enum Moods { HAPPY, SAD, ANGRY, NEUTRAL }
+public enum Moods { HAPPY, SAD, ANGRY, NEUTRAL, UNKNOWN }
 
