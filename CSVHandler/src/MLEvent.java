@@ -52,5 +52,17 @@ public class MLEvent {
         this.spokeState = spokeState;
     }
 
-
+    @Override
+    public String toString() {
+        return "MLEvent{" +
+                "personID=" + personID +
+                ", timeStamp=" + timeStamp +
+                ", kYouActivityType=" + kYouActivityType +
+                ", metaData=" + metaData +
+                ", moodState=" + moodState +
+                ", wasActiveState=" + wasActiveState +
+                ", ateState=" + ateState +
+                ", spokeState=" + spokeState +
+                '}';
+    }
 }
