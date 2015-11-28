@@ -5,6 +5,7 @@
 
 
 import java.util.Date;
+import java.util.ArrayList;
 
 
 public class DataSim {
@@ -17,6 +18,8 @@ public class DataSim {
 
     // output file name
     static private String outputFileName;
+    // ML output file name
+    static private String outputMLFileName;
 
 
     // each simulation generates new files names by using the timestamp as a prefix
@@ -33,6 +36,9 @@ public class DataSim {
 
     // Simulation output handler
     static private SimOutputManager simOutputer = new SimOutputManager();
+
+    // MLs holder
+    static private MLHolder mlHolder;
 
 
     public static void main(String [ ] args)
@@ -76,6 +82,23 @@ public class DataSim {
         // close output
         simOutputer.closeOutputer();
 
+        // create arraylist from community
+        ArrayList <SimEvent> events = new ArrayList<SimEvent>();
+        community.createSimEventsArrayList(events); // update the list
+        // send community to ML and generate ML per activity
+        mlHolder = new MLHolder(events);
+        mlHolder.init();
+
+        // prepare for ML output
+        simOutputer.setOutFileName(outputMLFileName);
+        simOutputer.setOutputDir(outputDirectory);
+        simOutputer.prepFile();
+
+        // dump ML events to output CSV file
+        mlHolder.dumpToCSV(simOutputer);
+
+        // close output
+        simOutputer.closeOutputer();
 
     }
 
@@ -99,7 +122,13 @@ public class DataSim {
         System.out.println("DataSim: output file prefix is " + date.getDay() + date.getHours() + date.getMinutes());
 
         outputFileName = outputFilesPrefix;
-        System.out.println("DataSim: output file name is " + outputFileName);
+
+        outputFilesPrefix = new String(date.getDay() + "-" + date.getHours() + "-" + date.getMinutes() + "IRMLSimOut.csv");
+        System.out.println("DataMLSim: output file prefix is " + date.getDay() + date.getHours() + date.getMinutes());
+
+        outputMLFileName = outputFilesPrefix;
+
+        System.out.println("DataMLSim: output file name is " + outputMLFileName);
 
         return true;
 
