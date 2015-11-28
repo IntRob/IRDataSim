@@ -5,6 +5,7 @@ import definitions.kYouActivities;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.Random;
 
 /**
  * Created by itaimendelsohn on 11/26/15.
@@ -55,19 +56,22 @@ public class MLHolder {
         while (iterator.hasNext()) {
             SimEvent rawEvent = iterator.next();
 
-        /*
             if (rawEvent.getkYouActivityType() == kYouActivities.SUGGESTWALK) // looks for all walk activities in the raw data
             {
-                MLEvent mlEvent = new MLEvent(rawEvent.getPersonID(),rawEvent.getTimeStamp(),rawEvent.getkYouActivityType(),rawEvent.getMetaData());
+                MLEvent mlEvent = new MLEvent(rawEvent.getPersonID(),rawEvent.getDayNum(),rawEvent.getHour(),rawEvent.getMinute(),rawEvent.getkYouActivityType(),rawEvent.getMetaData());
                 mlEvent.setAteState(analyzeAteState(iterator.nextIndex()));
                 mlEvent.setMoodState(analyzeMoodState(iterator.nextIndex()));
                 mlEvent.setSpokeState(analyzeSpokeState(iterator.nextIndex()));
                 mlEvent.setWasActiveState(analyzeWasActiveState(iterator.nextIndex()));
+                // temp code!! TODO: fix with Roy
+                Random rand = new Random();
+                boolean accepted = rand.nextBoolean();
+                mlEvent.setAccepted(accepted);
                 suggestWalkML.addEvent(mlEvent);
 
                 System.out.println("WalkML" + mlEvent);
             }
-            */
+
         }
     }
 
@@ -77,20 +81,31 @@ public class MLHolder {
         ListIterator<SimEvent> iterator = rawEvents.listIterator();
         while (iterator.hasNext()) {
             SimEvent rawEvent = iterator.next();
-           /*
+
             if (rawEvent.getkYouActivityType() == kYouActivities.SUGGESTMUSIC) // looks for all walk activities in the raw data
             {
-                MLEvent mlEvent = new MLEvent(rawEvent.getPersonID(),rawEvent.getTimeStamp(),rawEvent.getkYouActivityType(),rawEvent.getMetaData());
+                MLEvent mlEvent = new MLEvent(rawEvent.getPersonID(),rawEvent.getDayNum(),rawEvent.getHour(),rawEvent.getMinute(),rawEvent.getkYouActivityType(),rawEvent.getMetaData());
                 mlEvent.setAteState(analyzeAteState(iterator.nextIndex()));
                 mlEvent.setMoodState(analyzeMoodState(iterator.nextIndex()));
                 mlEvent.setSpokeState(analyzeSpokeState(iterator.nextIndex()));
                 mlEvent.setWasActiveState(analyzeWasActiveState(iterator.nextIndex()));
+                // temp code!! TODO: fix with Roy
+                Random rand = new Random();
+                boolean accepted = rand.nextBoolean();
+                mlEvent.setAccepted(accepted);
+
                 suggestMusicML.addEvent(mlEvent);
 
                 System.out.println("MusicML" + mlEvent);
             }
-            */
         }
+    }
+
+    // dump content into a CSV file
+    public void dumpToCSV(SimOutputManager outputer)
+    {
+        suggestWalkML.dumpToCSV(outputer);
+        suggestMusicML.dumpToCSV(outputer);
     }
 
     // helper to define how many event to analyze back when defining a state
@@ -169,7 +184,7 @@ public class MLHolder {
 
     private Moods analyzeMoodState(int currIndex) {
         int i = indexForPeriodToAnalyze(currIndex);// maybe for mood we need longer periods... TODO:
-        int[] moodsArray = new int[3];
+        int[] moodsArray = new int[Moods.values().length];
         for (int j=0; j<moodsArray.length; j++)
             moodsArray[j] = 0;
 
