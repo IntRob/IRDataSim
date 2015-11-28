@@ -27,9 +27,12 @@ public class ActivityML {
     }
 
     // dump content into a CSV file
-    public void dumpToCSV(File fName)
+    public void dumpToCSV(SimOutputManager outputer)
     {
-        // TODO
+        for ( int i = 0; i < events.size();i++)
+        {
+            outputer.writeToFile(events.get(i).toCSVLine());
+        }
     }
     // add an event to the list
     public void addEvent(MLEvent event)
