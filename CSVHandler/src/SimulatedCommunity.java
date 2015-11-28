@@ -290,6 +290,20 @@ public class SimulatedCommunity {
         }
     }
 
+    /* dump all people simulation events into a arraylist
+    *  events is created outside*/
+    public void createSimEventsArrayList(ArrayList<SimEvent> events) {
+
+        for (int i = 0; i < size; i++) {
+            Person person = peopleRecords.get(i);
+            for (int j = 0; j < person.getSimEvents().size(); j++) {
+                SimEvent event = person.getSimEvents().get(j);
+
+                events.add(event);
+            }
+        }
+    }
+
     private int sumPersonaSplit(){
         int sum = 0;
 
