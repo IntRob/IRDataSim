@@ -15,8 +15,6 @@ public class MLHolder {
 
     // set of thresholds for the state analysis
     private static int ATE_THRESHOLD = 2;
-    private static int WALK_THRESHOLD = 2;
-    private static int MUSIC_THRESHOLD = 2;
     private static int SPOKE_THRESHOLD = 2;
     private static int ACTIVE_THRESHOLD = 2;
 
@@ -24,6 +22,11 @@ public class MLHolder {
     private static final int MOOD_HAPPY = 0;//Moods.HAPPY.ordinal(); TODO: fix this ugly thing
     private static final int MOOD_SAD = 1;//Moods.SAD.ordinal();
     private static final int MOOD_ANGRY = 2;//Moods.ANGRY.ordinal();
+
+    //type of MLs
+    private static final int WALK_ML = 0;
+    private static final int MUSIC_ML = 1;
+
 
 
 
@@ -104,7 +107,7 @@ public class MLHolder {
         simOutputer.setOutputDir(outPutDirectory);
         simOutputer.prepFile();
 
-        makeArffHeader();
+        makeArffHeader(WALK_ML);
         // dump ML events to output CSV file
         suggestWalkML.dumpToCSV(simOutputer);
 
@@ -116,7 +119,7 @@ public class MLHolder {
         simOutputer.setOutputDir(outPutDirectory);
         simOutputer.prepFile();
 
-        makeArffHeader();
+        makeArffHeader(MUSIC_ML);
         // dump ML events to output CSV file
         suggestMusicML.dumpToCSV(simOutputer);
 
@@ -126,9 +129,15 @@ public class MLHolder {
 
     //make the arff header. at the moment sme attributes for all files. move to per machine later
     // assumes simoutputter is already "on"
-    private void makeArffHeader()
+    private void makeArffHeader(int mlType)
     {
         Date date = new Date();
+        String activity;
+        if ( mlType == MUSIC_ML)
+            activity = "SUGGESTMUSIC";
+        else
+            activity = "SUGGESTWALK";
+
         String firstComment = "% 1. Title: First \"real\" IR data set for testing\n" +
                                 "%\n" +
                                 "% 2. Sources:\n" +
@@ -137,7 +146,7 @@ public class MLHolder {
         String relation = "@RELATION IRMLTests\n";
         String attributes = "@ATTRIBUTE personID NUMERIC\n" +
                             "@ATTRIBUTE time DATE \"DD:HH:mm\"\n" +
-                            "@ATTRIBUTE activity {SUGGESTWALK,SUGGESTMUSIC}\n" +
+                            "@ATTRIBUTE activity {" + activity + "}\n" +
                             "@ATTRIBUTE meta-data NUMERIC\n" +
                             "@ATTRIBUTE mood-state {HAPPY, SAD, ANGRY, NEUTRAL, UNKNOWN}\n" +
                             "@ATTRIBUTE was-active-state {true,false}\n" +
