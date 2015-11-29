@@ -286,6 +286,7 @@ public class SimLoader {
              "description": "Happy",
              "weekdaytemplateID": "2",
              "weekendtemplateID": "2",
+             "attVariance" : "0",
              "attToMusic" : "0.4",
              "attToBook" : "0.5",
              "attToPhysical" : "0.6",

@@ -32,13 +32,12 @@ public class PersonaProfile {
      * Potential events include: DOPHONE, DOMUSIC, DOTV, DOBOOK, DOPHYSICAL, DOSOCIAL
      */
 
-    private double attToSkype = 0.5;
-    private double attToMusic = 0.5;
-    private double attToTV = 0.5;
-    private double attToBook = 0.5;
-    private double attToPhysical = 0.5;
-    private double attToSocial = 0.5;
-
+    private double attToSkype;
+    private double attToMusic;
+    private double attToTV;
+    private double attToBook;
+    private double attToPhysical;
+    private double attToSocial;
 
     /**
      * Attitude to routine defines how close this persona follows its routine.
@@ -155,7 +154,7 @@ public class PersonaProfile {
         this.attToRoutine = attToRoutine;
     }
 
-
+    public void setAttToSkype(double attToSkype) { this.attToSkype = attToSkype; }
 
     @Override
     public String toString() {
@@ -165,7 +164,8 @@ public class PersonaProfile {
                 ", typeDescriptor='" + typeDescriptor + '\'' +
                 ", weekdayRoutine=" + weekdayRoutine +
                 ", weekendRoutine=" + weekendRoutine +
-                "\n" + ", attToSkype=" + attToSkype +
+                "\n" +
+                ", attToSkype=" + attToSkype +
                 ", attToMusic=" + attToMusic +
                 ", attToTV=" + attToTV +
                 ", attToBook=" + attToBook +
