@@ -217,6 +217,7 @@ public class Person {
             event.setMinute(currenTime % 60);
             event.setInitiaor(ActivityInitiator.PERSON);
             event.setPersonActivityType(HomeEventType.UNKNOWN);
+            event.setAcceptedEvent(false);
 
             // check if this is a starting point of a new event
             templateEvent = persona.getWeekdayRoutine().isEventStartTime(dayTemplate,currenTime);
@@ -260,7 +261,7 @@ public class Person {
                         //generate cause event
                         //if accepted, then generate affect
                         SimEvent kYouEvent = new SimEvent(this.id, dayID, event.getHour(), event.getMinute(),
-                                ActivityInitiator.KYOU, HomeEventType.UNKNOWN, kActivity, 0);
+                                ActivityInitiator.KYOU, HomeEventType.UNKNOWN, kActivity, 0, false);
 
                         simEvents.add(kYouEvent);
 
@@ -273,8 +274,11 @@ public class Person {
                         if(acceptKYouActivity(kActivity)){
 
                             // generate affect event (for now a single instance, 1 minute later after kYou suggestion
-                            System.out.println("DATA GEN: kYou event (" + kActivity + ") was accepted ");
 
+                            // indicate that the event was accepted
+                            kYouEvent.setAcceptedEvent(true);
+                            System.out.println("DATA GEN: kYou event (" + kActivity + ") was accepted ");
+                            
                             // convert kYou activity to effect event on person (e.g. suggestmusic--> music
 
                             SimEvent kYouDrivenEvent = new SimEvent();

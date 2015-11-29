@@ -10,30 +10,33 @@ import java.sql.Timestamp;
 public class SimEvent {
 
     // the ID of kYou user
-    int personID;
+    private int personID;
 
     // event time stamp - dd-hh-mm . seconds and below is not in use
-    int dayNum;
-    int hour;
-    int minute;
+    private int dayNum;
+    private int hour;
+    private int minute;
 
 
     // who generated the event. The elderly or the robot
-    ActivityInitiator initiaor;
+    private ActivityInitiator initiaor;
 
     // event type for person initiated events
-    HomeEventType personActivityType = HomeEventType.UNKNOWN;
+    private HomeEventType personActivityType = HomeEventType.UNKNOWN;
 
     // event type for kYou initiated events
-    kYouActivities kYouActivityType = kYouActivities.NONE;
+    private kYouActivities kYouActivityType = kYouActivities.NONE;
 
     // meta-data - for now an int, later will be extended
-    int metaData;
+    private int metaData;
+
+    // indicates for kYou initiated events if the intervention was accepted or not
+    private boolean acceptedEvent = false;
 
     public SimEvent() {
     }
 
-    public SimEvent(int personID, int dayNum, int hour, int minute, ActivityInitiator initiaor, HomeEventType personActivityType, kYouActivities kYouActivityType, int metaData) {
+    public SimEvent(int personID, int dayNum, int hour, int minute, ActivityInitiator initiaor, HomeEventType personActivityType, kYouActivities kYouActivityType, int metaData, boolean acceptedEvent) {
         this.personID = personID;
         this.dayNum = dayNum;
         this.hour = hour;
@@ -42,6 +45,7 @@ public class SimEvent {
         this.personActivityType = personActivityType;
         this.kYouActivityType = kYouActivityType;
         this.metaData = metaData;
+        this.acceptedEvent = acceptedEvent;
     }
 
     public int getPersonID() {
@@ -108,6 +112,14 @@ public class SimEvent {
         this.minute = minute;
     }
 
+    public boolean isAcceptedEvent() {
+        return acceptedEvent;
+    }
+
+    public void setAcceptedEvent(boolean acceptedEvent) {
+        this.acceptedEvent = acceptedEvent;
+    }
+
     @Override
     public String toString() {
         return "SimEvent{" +
@@ -119,6 +131,7 @@ public class SimEvent {
                 ", personActivityType=" + personActivityType +
                 ", kYouActivityType=" + kYouActivityType +
                 ", metaData=" + metaData +
+                ", accepted=" + acceptedEvent +
                 '}';
     }
 
@@ -137,7 +150,8 @@ public class SimEvent {
                 "," + dayNum + ":" + hour + ":" + minute +
                 "," + initiatorStr +
                 "," + activityTypeStr +
-                        "," + metaData + "\n";
+                        "," + metaData +
+                        "," + acceptedEvent + "\n";
 
         return csvString;
     }
