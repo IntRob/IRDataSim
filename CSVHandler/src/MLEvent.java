@@ -34,13 +34,14 @@ public class MLEvent {
     // TODO add more states
 
 
-    public MLEvent(int personID, int dayNum, int hour, int minute, kYouActivities kYouActivityType, int metaData) {
+    public MLEvent(int personID, int dayNum, int hour, int minute, kYouActivities kYouActivityType, int metaData,boolean accepted) {
         this.personID = personID;
         this.dayNum = dayNum;
         this.hour = hour;
         this.minute = minute;
         this.kYouActivityType = kYouActivityType;
         this.metaData = metaData;
+        this.accepted = accepted;
     }
 
     public void setMoodState(Moods moodState) {
