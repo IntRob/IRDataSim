@@ -3,7 +3,7 @@ import definitions.Moods;
 import definitions.kYouActivities;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Date;
 import java.util.ListIterator;
 import java.util.Random;
 
@@ -36,6 +36,9 @@ public class MLHolder {
     // the ML for the music suggestions activity TODO" add more MLs
     private ActivityML suggestMusicML;
 
+    // Simulation output handler
+    static private SimOutputManager simOutputer = new SimOutputManager();
+
     public MLHolder(ArrayList<SimEvent> rawEvents) {
         this.rawEvents = rawEvents;
         suggestWalkML = new ActivityML(kYouActivities.SUGGESTWALK);
@@ -58,15 +61,11 @@ public class MLHolder {
 
             if (rawEvent.getkYouActivityType() == kYouActivities.SUGGESTWALK) // looks for all walk activities in the raw data
             {
-                MLEvent mlEvent = new MLEvent(rawEvent.getPersonID(),rawEvent.getDayNum(),rawEvent.getHour(),rawEvent.getMinute(),rawEvent.getkYouActivityType(),rawEvent.getMetaData());
+                MLEvent mlEvent = new MLEvent(rawEvent.getPersonID(),rawEvent.getDayNum(),rawEvent.getHour(),rawEvent.getMinute(),rawEvent.getkYouActivityType(),rawEvent.getMetaData(),rawEvent.isAcceptedEvent());
                 mlEvent.setAteState(analyzeAteState(iterator.nextIndex()));
                 mlEvent.setMoodState(analyzeMoodState(iterator.nextIndex()));
                 mlEvent.setSpokeState(analyzeSpokeState(iterator.nextIndex()));
                 mlEvent.setWasActiveState(analyzeWasActiveState(iterator.nextIndex()));
-                // temp code!! TODO: fix with Roy
-                Random rand = new Random();
-                boolean accepted = rand.nextBoolean();
-                mlEvent.setAccepted(accepted);
                 suggestWalkML.addEvent(mlEvent);
 
                 System.out.println("WalkML" + mlEvent);
@@ -84,16 +83,11 @@ public class MLHolder {
 
             if (rawEvent.getkYouActivityType() == kYouActivities.SUGGESTMUSIC) // looks for all walk activities in the raw data
             {
-                MLEvent mlEvent = new MLEvent(rawEvent.getPersonID(),rawEvent.getDayNum(),rawEvent.getHour(),rawEvent.getMinute(),rawEvent.getkYouActivityType(),rawEvent.getMetaData());
+                MLEvent mlEvent = new MLEvent(rawEvent.getPersonID(),rawEvent.getDayNum(),rawEvent.getHour(),rawEvent.getMinute(),rawEvent.getkYouActivityType(),rawEvent.getMetaData(),rawEvent.isAcceptedEvent());
                 mlEvent.setAteState(analyzeAteState(iterator.nextIndex()));
                 mlEvent.setMoodState(analyzeMoodState(iterator.nextIndex()));
                 mlEvent.setSpokeState(analyzeSpokeState(iterator.nextIndex()));
                 mlEvent.setWasActiveState(analyzeWasActiveState(iterator.nextIndex()));
-                // temp code!! TODO: fix with Roy
-                Random rand = new Random();
-                boolean accepted = rand.nextBoolean();
-                mlEvent.setAccepted(accepted);
-
                 suggestMusicML.addEvent(mlEvent);
 
                 System.out.println("MusicML" + mlEvent);
@@ -101,6 +95,60 @@ public class MLHolder {
         }
     }
 
+    // create all needed outputs from the different MLs
+    // one file per ML
+    public void createOutputs(String outPutDirectory, String outPutFileName)
+    {
+        // prepare for ML walk output
+        simOutputer.setOutFileName(outPutFileName + "Walk" + ".arff"); // will be at weka format
+        simOutputer.setOutputDir(outPutDirectory);
+        simOutputer.prepFile();
+
+        makeArffHeader();
+        // dump ML events to output CSV file
+        suggestWalkML.dumpToCSV(simOutputer);
+
+        // close output
+        simOutputer.closeOutputer();
+
+        // prepare for ML music output
+        simOutputer.setOutFileName(outPutFileName + "Music" + ".arff"); // will be at weka format
+        simOutputer.setOutputDir(outPutDirectory);
+        simOutputer.prepFile();
+
+        makeArffHeader();
+        // dump ML events to output CSV file
+        suggestMusicML.dumpToCSV(simOutputer);
+
+        // close output
+        simOutputer.closeOutputer();
+    }
+
+    //make the arff header. at the moment sme attributes for all files. move to per machine later
+    // assumes simoutputter is already "on"
+    private void makeArffHeader()
+    {
+        Date date = new Date();
+        String firstComment = "% 1. Title: First \"real\" IR data set for testing\n" +
+                                "%\n" +
+                                "% 2. Sources:\n" +
+                                "% (a) Creator: Itai\n" +
+                                "% (b) Date:" + date.toString() + "\n";
+        String relation = "@RELATION IRMLTests\n";
+        String attributes = "@ATTRIBUTE personID NUMERIC\n" +
+                            "@ATTRIBUTE time DATE \"DD:HH:mm\"\n" +
+                            "@ATTRIBUTE activity {SUGGESTWALK,SUGGESTMUSIC}\n" +
+                            "@ATTRIBUTE meta-data NUMERIC\n" +
+                            "@ATTRIBUTE mood-state {HAPPY, SAD, ANGRY, NEUTRAL, UNKNOWN}\n" +
+                            "@ATTRIBUTE was-active-state {true,false}\n" +
+                            "@ATTRIBUTE ate-state {true,false}\n" +
+                            "@ATTRIBUTE spoke-state {true,false}\n" +
+                            "@ATTRIBUTE acceptance {true,false}\n";
+        String dataHeader = "@DATA\n";
+
+        // now write to file
+        simOutputer.writeToFile(firstComment+relation+attributes+dataHeader);
+    }
     // dump content into a CSV file
     public void dumpToCSV(SimOutputManager outputer)
     {
