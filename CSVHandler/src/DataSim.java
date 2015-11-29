@@ -88,7 +88,7 @@ public class DataSim {
         // send community to ML and generate ML per activity
         mlHolder = new MLHolder(events);
         mlHolder.init();
-        mlHolder.createOutputs(outputDirectory,outputFileName);
+        mlHolder.createOutputs(outputDirectory,outputMLFileName);
     }
 
     /* set directories params */
