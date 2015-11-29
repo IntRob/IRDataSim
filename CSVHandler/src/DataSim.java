@@ -88,18 +88,7 @@ public class DataSim {
         // send community to ML and generate ML per activity
         mlHolder = new MLHolder(events);
         mlHolder.init();
-
-        // prepare for ML output
-        simOutputer.setOutFileName(outputMLFileName);
-        simOutputer.setOutputDir(outputDirectory);
-        simOutputer.prepFile();
-
-        // dump ML events to output CSV file
-        mlHolder.dumpToCSV(simOutputer);
-
-        // close output
-        simOutputer.closeOutputer();
-
+        mlHolder.createOutputs(outputDirectory,outputFileName);
     }
 
     /* set directories params */
@@ -123,7 +112,7 @@ public class DataSim {
 
         outputFileName = outputFilesPrefix;
 
-        outputFilesPrefix = new String(date.getDay() + "-" + date.getHours() + "-" + date.getMinutes() + "IRMLSimOut.csv");
+        outputFilesPrefix = new String(date.getDay() + "-" + date.getHours() + "-" + date.getMinutes() + "IRMLSimOut");
         System.out.println("DataMLSim: output file prefix is " + date.getDay() + date.getHours() + date.getMinutes());
 
         outputMLFileName = outputFilesPrefix;
