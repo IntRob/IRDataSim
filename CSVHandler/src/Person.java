@@ -12,7 +12,9 @@ public class Person {
     private int id;
 
     private int age;
+
     private Gender gender;
+
     private PersonaProfile persona;
 
     /**
@@ -24,12 +26,16 @@ public class Person {
      * Potential events include: DOSKYPE, DOMUSIC, DOTV, DOBOOK, DOPHYSICAL, DOSOCIAL
      */
 
-    private double attToSkype = 0.5;
-    private double attToMusic = 0.5;
-    private double attToTV = 0.5;
-    private double attToBook = 0.5;
-    private double attToPhysical = 0.5;
-    private double attToSocial = 0.5;
+    // variance from attitude to activity
+    private double attitudeVariance;
+
+    // probability of acceptence for differnet potential kYou suggested activities
+    private double attToSkype;
+    private double attToMusic;
+    private double attToTV;
+    private double attToBook;
+    private double attToPhysical;
+    private double attToSocial;
 
     // interval between events generation for this person
     int minutesInterval;
@@ -79,37 +85,40 @@ public class Person {
      */
 
 
-    public void generateAttributes(double communityVariance) {
+    public void generateAttributes(double variance) {
+
+
+        this.attitudeVariance = variance;
 
         // set skype attribute
         double attribute = persona.getAttToSkype();
-        attToSkype = generateFactoredAttribute(attribute,communityVariance);
-        //System.out.println("Skype attribute: " + attribute + " , variance: " + communityVariance + " , factored attirbute " + attToSkype);
+        attToSkype = generateFactoredAttribute(attribute,variance);
+        //System.out.println("Skype attribute: " + attribute + " , variance: " + variance + " , factored attirbute " + attToSkype);
 
         // set music attribute
         attribute = persona.getAttToMusic();
-        attToMusic = generateFactoredAttribute(attribute,communityVariance);
-        //System.out.println("Music attribute: " + attribute + " , variance: " + communityVariance + " , factored attirbute " + attToMusic);
+        attToMusic = generateFactoredAttribute(attribute,variance);
+        //System.out.println("Music attribute: " + attribute + " , variance: " + variance + " , factored attirbute " + attToMusic);
 
         // set TV attribute
         attribute = persona.getAttToTV();
-        attToTV = generateFactoredAttribute(attribute,communityVariance);
-        //System.out.println("TV attribute: " + attribute + " , variance: " + communityVariance + " , factored attirbute " + attToTV);
+        attToTV = generateFactoredAttribute(attribute,variance);
+        //System.out.println("TV attribute: " + attribute + " , variance: " + variance + " , factored attirbute " + attToTV);
 
         // set book attribute
         attribute = persona.getAttToBook();
-        attToBook = generateFactoredAttribute(attribute,communityVariance);
-        //System.out.println("Book attribute: " + attribute + " , variance: " + communityVariance + " , factored attirbute " + attToBook);
+        attToBook = generateFactoredAttribute(attribute,variance);
+        //System.out.println("Book attribute: " + attribute + " , variance: " + variance + " , factored attirbute " + attToBook);
 
         // set physical attribute
         attribute = persona.getAttToPhysical();
-        attToPhysical = generateFactoredAttribute(attribute,communityVariance);
-        //System.out.println("Physical attribute: " + attribute + " , variance: " + communityVariance + " , factored attirbute " + attToPhysical);
+        attToPhysical = generateFactoredAttribute(attribute,variance);
+        //System.out.println("Physical attribute: " + attribute + " , variance: " + variance + " , factored attirbute " + attToPhysical);
 
         // set social attribute
         attribute = persona.getAttToSocial();
-        attToSocial = generateFactoredAttribute(attribute,communityVariance);
-        //System.out.println("Social attribute: " + attribute + " , variance: " + communityVariance + " , factored attirbute " + attToSocial);
+        attToSocial = generateFactoredAttribute(attribute,variance);
+        //System.out.println("Social attribute: " + attribute + " , variance: " + variance + " , factored attirbute " + attToSocial);
 
     }
 
@@ -278,7 +287,7 @@ public class Person {
                             // indicate that the event was accepted
                             kYouEvent.setAcceptedEvent(true);
                             System.out.println("DATA GEN: kYou event (" + kActivity + ") was accepted ");
-                            
+
                             // convert kYou activity to effect event on person (e.g. suggestmusic--> music
 
                             SimEvent kYouDrivenEvent = new SimEvent();
@@ -509,6 +518,14 @@ public class Person {
         this.mykYou = kProfile;
     }
 
+    public double getAttitudeVariance() {
+        return attitudeVariance;
+    }
+
+    public void setAttitudeVariance(double attitudeVariance) {
+        this.attitudeVariance = attitudeVariance;
+    }
+
     @Override
     public String toString() {
         return "Person{" +
@@ -516,6 +533,7 @@ public class Person {
                 ", age=" + age +
                 ", gender=" + gender +
                 ", persona=" + persona +
+                ", attitudeVariance=" + attitudeVariance +
                 ", attToSkype=" + attToSkype +
                 ", attToMusic=" + attToMusic +
                 ", attToTV=" + attToTV +
@@ -542,6 +560,42 @@ public class Person {
      * @return
      */
     private boolean acceptKYouActivity(kYouActivities suggestedActivity){
+
+        /*
+        check what is the attitude for the activity
+        factor person variance in decision
+
+
+         */
+        Random rand = new Random();
+
+        double random = rand.nextDouble();
+        double attitude = -1;
+
+
+        if( suggestedActivity == kYouActivities.SUGGESTABOOK)
+            attitude = this.attToBook;
+
+        if( suggestedActivity == kYouActivities.SUGGESTMUSIC)
+            attitude = this.attToMusic;
+
+        if( suggestedActivity == kYouActivities.SUGGESTWALK)
+            attitude = this.attToPhysical;
+
+        if( suggestedActivity == kYouActivities.SUGGESTSKYPE)
+            attitude = this.attToSkype;
+
+        // error found
+        if(attitude == -1) {
+            System.out.println("DATAGEN: ERROR - unknown suggestedActivity type (acceptKYouActivity)");
+            System.exit(1);
+        }
+
+        if(attitude < random)
+            return false;
+
+
+        System.out.println("DATAGEN: Person accepted kYou suggestion (attitude/random):" + attitude + "/" + random);
 
         return true;
     }

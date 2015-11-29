@@ -116,7 +116,6 @@ public class SimulatedCommunity {
                 person.setAge(rand.nextInt((maxAge - minAge) + 1) + minAge);
 
 
-
                 // set gender based on input gender distribution (male)
                 Gender gender = Gender.MALE;
                 int probability = rand.nextInt(100 + 1);
